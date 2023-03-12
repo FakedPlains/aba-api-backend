@@ -1,0 +1,234 @@
+{
+  "components": {
+    "schemas": {
+      "_user_registerresponse": {
+        "properties": {
+          "success": {
+            "format": "boolean",
+            "description": "响应成功",
+            "type": "boolean"
+          },
+          "data": {
+            "description": "响应数据"
+          },
+          "code": {
+            "format": "string",
+            "description": "响应状态码",
+            "type": "string"
+          },
+          "message": {
+            "format": "string",
+            "description": "响应信息",
+            "type": "string"
+          },
+          "timestamp": {
+            "description": "响应时间戳"
+          }
+        }
+      },
+      "_user_account__userAccount_response": {
+        "properties": {
+          "success": {
+            "format": "boolean",
+            "description": "响应成功",
+            "type": "boolean"
+          },
+          "data": {
+            "description": "响应数据(object)",
+            "type": "object",
+            "properties": {
+              "id": {
+                "description": "id"
+              },
+              "userName": {
+                "format": "string",
+                "description": "用户昵称",
+                "type": "string"
+              },
+              "userAccount": {
+                "format": "string",
+                "description": "账号",
+                "type": "string"
+              },
+              "userAvatar": {
+                "format": "string",
+                "description": "用户头像",
+                "type": "string"
+              },
+              "gender": {
+                "description": "性别"
+              },
+              "userRole": {
+                "format": "string",
+                "description": "用户角色：user / admin",
+                "type": "string"
+              },
+              "userPassword": {
+                "format": "string",
+                "description": "密码",
+                "type": "string"
+              },
+              "accessKey": {
+                "format": "string",
+                "description": "accessKey",
+                "type": "string"
+              },
+              "secretKey": {
+                "format": "string",
+                "description": "secretKey",
+                "type": "string"
+              },
+              "createTime": {
+                "description": "创建时间(object)",
+                "type": "object"
+              },
+              "updateTime": {
+                "description": "更新时间(object)",
+                "type": "object"
+              },
+              "isDelete": {
+                "description": "是否删除"
+              }
+            }
+          },
+          "code": {
+            "format": "string",
+            "description": "响应状态码",
+            "type": "string"
+          },
+          "message": {
+            "format": "string",
+            "description": "响应信息",
+            "type": "string"
+          },
+          "timestamp": {
+            "description": "响应时间戳"
+          }
+        }
+      },
+      "_user_account__userAccount_request": {},
+      "_user_registerrequest": {
+        "properties": {
+          "userPassword": {
+            "format": "string",
+            "description": "用户账号",
+            "type": "string"
+          },
+          "repeatPassword": {
+            "format": "string",
+            "description": "用户密码",
+            "type": "string"
+          },
+          "userAccount": {
+            "format": "string",
+            "description": "重复密码",
+            "type": "string"
+          }
+        },
+        "required": [
+          "userPassword",
+          "repeatPassword",
+          "userAccount"
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "http://192.168.31.101:10010"
+    }
+  ],
+  "openapi": "3.0.3",
+  "paths": {
+    "/user/register": {
+      "post": {
+        "summary": "用户注册",
+        "deprecated": false,
+        "description": "用户注册",
+        "tags": [
+          "UserController"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/_user_registerrequest"
+              },
+              "examples": {
+                "json": {
+                  "summary": "test data",
+                  "value": "{\n  \"userPassword\": \"cmx04r\",\n  \"repeatPassword\": \"2c5ljx\",\n  \"userAccount\": \"pwsnmi\"\n}"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/_user_registerresponse"
+                },
+                "examples": {
+                  "json": {
+                    "summary": "test data",
+                    "value": "{\n  \"success\": true,\n  \"data\": 774,\n  \"code\": \"13271\",\n  \"message\": \"success\",\n  \"timestamp\": 1678608060519\n}"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "register",
+        "parameters": []
+      }
+    },
+    "/user/account/{userAccount}": {
+      "get": {
+        "summary": "根据用户账号获取用户信息",
+        "deprecated": false,
+        "description": "根据用户账号获取用户信息",
+        "tags": [
+          "UserController"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/_user_account__userAccount_response"
+                },
+                "examples": {
+                  "json": {
+                    "summary": "test data",
+                    "value": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 668,\n    \"userName\": \"antony.daugherty\",\n    \"userAccount\": \"86f86e\",\n    \"userAvatar\": \"bml0qa\",\n    \"gender\": 0,\n    \"userRole\": \"waxxuo\",\n    \"userPassword\": \"7h4c43\",\n    \"accessKey\": \"g75c1m\",\n    \"secretKey\": \"7x60t6\",\n    \"createTime\": \"2023-03-12 16:01:00\",\n    \"updateTime\": \"2023-03-12 16:01:00\",\n    \"isDelete\": 317\n  },\n  \"code\": \"13271\",\n  \"message\": \"success\",\n  \"timestamp\": 1678608060519\n}"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getUserByUserAccount",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "description": "用户账号",
+            "required": true,
+            "example": "hapzsq",
+            "name": "userAccount"
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "aba-api",
+    "version": "1.0.0"
+  }
+}

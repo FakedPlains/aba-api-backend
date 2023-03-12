@@ -1,0 +1,25 @@
+{
+  "outPath": "src/main/resources/static/doc",
+  "serverUrl": "http://192.168.31.101:10010",
+  "isStrict": false,
+  "packageFilters": "cloud.zfwproject.abaapi.service.controller.*",
+  "projectName": "aba-api",
+  "appToken": "8faa1eb3617447d1a39c0fd22eac56c8",
+  "openUrl": "http://192.168.10.11:7700/api",
+  "debugEnvName": "测试环境",
+  "replace": true,
+  "debugEnvUrl": "http://192.168.31.101:10010",
+  "framework": "spring",
+  "inlineEnum": true,
+  "allInOne": true,
+  "coverOld": true,
+  "createDebugPage": true,
+  "errorCodeDictionaries": [
+    {
+      "title": "响应状态码",
+      "enumClassName": "cloud.zfwproject.abaapi.common.model.ResponseCode",
+      "codeField": "code",
+      "descField": "message"
+    }
+  ]
+}
