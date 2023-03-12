@@ -58,6 +58,7 @@ public class ResponseUtils {
      */
     public static ResponseResult<Void> fail(String code, String message) {
         return ResponseResult.<Void>builder()
+                .success(false)
                 .code(code)
                 .message(message)
                 .timestamp(System.currentTimeMillis())
@@ -71,11 +72,7 @@ public class ResponseUtils {
      * @return 响应结果
      */
     public static ResponseResult<Void> fail(ResponseCode responseCode) {
-        return ResponseResult.<Void>builder()
-                .code(responseCode.getCode())
-                .message(responseCode.getMessage())
-                .timestamp(System.currentTimeMillis())
-                .build();
+        return fail(responseCode.getCode(), responseCode.getMessage());
     }
 
     /**
@@ -85,11 +82,7 @@ public class ResponseUtils {
      * @return 响应结果
      */
     public static ResponseResult<Void> fail(ResponseCode responseCode, String message) {
-        return ResponseResult.<Void>builder()
-                .code(responseCode.getCode())
-                .message(message)
-                .timestamp(System.currentTimeMillis())
-                .build();
+        return fail(responseCode.getCode(), message);
     }
 
 

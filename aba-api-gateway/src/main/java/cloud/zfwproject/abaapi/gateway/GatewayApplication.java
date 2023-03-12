@@ -1,5 +1,6 @@
 package cloud.zfwproject.abaapi.gateway;
 
+import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -9,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @description TODO
  * @date 2023/3/9 21:41
  */
+@EnableDubbo
 @SpringBootApplication
 public class GatewayApplication {
     public static void main(String[] args) {

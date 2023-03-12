@@ -1,4 +1,4 @@
-package cloud.zfwproject.abaapi.service.model.dto;
+package cloud.zfwproject.abaapi.service.model.dto.user;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;

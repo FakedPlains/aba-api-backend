@@ -2,9 +2,12 @@ package cloud.zfwproject.abaapi.service.controller;
 
 import cloud.zfwproject.abaapi.common.model.ResponseResult;
 import cloud.zfwproject.abaapi.common.util.ResponseUtils;
-import cloud.zfwproject.abaapi.service.model.dto.UserRegisterDTO;
+import cloud.zfwproject.abaapi.service.model.dto.user.UserQueryRequest;
+import cloud.zfwproject.abaapi.service.model.dto.user.UserRegisterDTO;
 import cloud.zfwproject.abaapi.service.model.po.User;
+import cloud.zfwproject.abaapi.service.model.vo.UserVO;
 import cloud.zfwproject.abaapi.service.service.UserService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +48,18 @@ public class UserController {
     public ResponseResult<User> getUserByUserAccount(@PathVariable("userAccount") String userAccount) {
         User user = userService.getUserByUserAccount(userAccount);
         return ResponseUtils.success(user);
+    }
+
+    /**
+     * 分页获取用户数据
+     *
+     * @param userQueryRequest 用户查询分页庆请求
+     * @return 分页数据
+     */
+    @GetMapping("page")
+    public ResponseResult<Page<UserVO>> getUserPage(@Validated UserQueryRequest userQueryRequest) {
+        Page<UserVO> userPage = userService.getUserPage(userQueryRequest);
+        return ResponseUtils.success(userPage);
     }
 
 }

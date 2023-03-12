@@ -1,0 +1,16 @@
+server:
+  port: 10001
+
+
+dubbo:
+  application:
+    name: dubbo-aba-api-service
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    address: nacos://192.168.10.11:8848
+    parameters:
+      namespace: 4ae9a459-9e4a-4371-bd04-60c8fc08aeb1
+      group: aba-api
+      register-consumer-url: true

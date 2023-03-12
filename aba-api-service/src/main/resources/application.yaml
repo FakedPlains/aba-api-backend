@@ -11,6 +11,8 @@ spring:
     host: 192.168.10.11
     port: 6379
     password: root
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
 
 mybatis-plus:
   global-config:
@@ -20,3 +22,14 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   type-aliases-package: cloud.zfwproject.abaapi.service.model.po
 
+dubbo:
+  application:
+    name: dubbo-aba-api-service
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    address: nacos://192.168.10.11:8848
+    parameters:
+      namespace: 4ae9a459-9e4a-4371-bd04-60c8fc08aeb1
+      group: aba-api

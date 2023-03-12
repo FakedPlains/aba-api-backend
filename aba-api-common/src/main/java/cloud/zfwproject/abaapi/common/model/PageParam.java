@@ -34,4 +34,6 @@ public class PageParam {
      * 排序顺序（默认升序）
      */
     private String sortOrder = CommonConstant.SORT_ORDER_ASC;
+
+    private Boolean sortOrderIsAsc= CommonConstant.SORT_ORDER_IS_ASC;
 }

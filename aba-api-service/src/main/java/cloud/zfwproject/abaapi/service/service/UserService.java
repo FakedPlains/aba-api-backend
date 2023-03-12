@@ -1,7 +1,10 @@
 package cloud.zfwproject.abaapi.service.service;
 
-import cloud.zfwproject.abaapi.service.model.dto.UserRegisterDTO;
+import cloud.zfwproject.abaapi.service.model.dto.user.UserQueryRequest;
+import cloud.zfwproject.abaapi.service.model.dto.user.UserRegisterDTO;
 import cloud.zfwproject.abaapi.service.model.po.User;
+import cloud.zfwproject.abaapi.service.model.vo.UserVO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -26,4 +29,12 @@ public interface UserService extends IService<User> {
      * @return 用户
      */
     User getUserByUserAccount(String userAccount);
+
+    /**
+     * 分页获取用户数据
+     *
+     * @param userQueryRequest 用户查询分页庆请求
+     * @return 分页数据
+     */
+    Page<UserVO> getUserPage(UserQueryRequest userQueryRequest);
 }
