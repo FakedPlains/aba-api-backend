@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @author yupi
  */
 @Data
-public class UserLoginRequest implements Serializable {
+public class UserLoginDTO implements Serializable {
 
     private static final long serialVersionUID = 3191241716373120793L;
 
@@ -23,4 +23,6 @@ public class UserLoginRequest implements Serializable {
     @NotBlank
     @Length(min = 8, max = 16, message = "密码长度必须在 8-16 位")
     private String userPassword;
+
+    private Boolean autoLogin;
 }

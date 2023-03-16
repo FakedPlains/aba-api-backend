@@ -22,6 +22,7 @@ public enum ResponseCode {
     // 通用错误码
     INVALID_PARAMS("30001", "invalid parameters"),
     REQUEST_TOO_FAST("30003", "request too fast"),
+    NOT_FOUND_ERROR("30004", "数据不存在"),
 
     // 用户相关错误码
     USER_UNAUTHORIZED("40004", "用户未登录"),
@@ -29,6 +30,7 @@ public enum ResponseCode {
 
     // 系统错误
     SYSTEM_ERROR("50000", "系统内部异常"),
+    OPERATION_ERROR("50001", "操作异常"),
 
     HTTP_STATUS_200("200", "ok"),
     HTTP_STATUS_400("400", "request error"),

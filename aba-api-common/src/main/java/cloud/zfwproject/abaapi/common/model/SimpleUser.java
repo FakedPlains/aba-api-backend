@@ -25,12 +25,22 @@ public class SimpleUser {
     /**
      * 用户名
      */
-    private String username;
+    private String userName;
 
     /**
      * 用户头像
      */
-    private String avatar;
+    private String userAvatar;
+
+    /**
+     * 性别
+     */
+    private Integer gender;
+
+    /**
+     * 用户角色: user, admin
+     */
+    private String userRole;
 
     /**
      * 用户权限

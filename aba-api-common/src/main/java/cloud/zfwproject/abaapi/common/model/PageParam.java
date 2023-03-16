@@ -3,6 +3,8 @@ package cloud.zfwproject.abaapi.common.model;
 import cloud.zfwproject.abaapi.common.constant.CommonConstant;
 import lombok.Data;
 
+import javax.validation.constraints.Max;
+
 /**
  * @author 46029
  * @version 1.0
@@ -23,6 +25,7 @@ public class PageParam {
     /**
      * 页面大小
      */
+    @Max(value = 50, message = "页面大小不合法")
     private Long pageSize = DEFAULT_PAGE_SIZE;
 
     /**

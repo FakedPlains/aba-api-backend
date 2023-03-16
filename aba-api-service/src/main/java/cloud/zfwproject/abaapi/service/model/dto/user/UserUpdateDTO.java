@@ -1,8 +1,8 @@
 package cloud.zfwproject.abaapi.service.model.dto.user;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -11,10 +11,11 @@ import java.io.Serializable;
  * @author yupi
  */
 @Data
-public class UserUpdateRequest implements Serializable {
+public class UserUpdateDTO implements Serializable {
     /**
      * id
      */
+    @NotNull(message = "用户 id 不能为空")
     private Long id;
 
     /**
@@ -47,6 +48,5 @@ public class UserUpdateRequest implements Serializable {
      */
     private String userPassword;
 
-    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

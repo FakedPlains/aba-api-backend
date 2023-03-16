@@ -1,7 +1,9 @@
 package cloud.zfwproject.abaapi.service.model.dto.user;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -10,7 +12,7 @@ import java.io.Serializable;
  * @author yupi
  */
 @Data
-public class UserAddRequest implements Serializable {
+public class UserAddDTO implements Serializable {
 
     /**
      * 用户昵称
@@ -20,6 +22,8 @@ public class UserAddRequest implements Serializable {
     /**
      * 账号
      */
+    @NotBlank(message = "用户账号不能为空")
+    @Length(min = 6, max = 16, message = "用户账号长度必须在 6 - 16 之间")
     private String userAccount;
 
     /**

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UserQueryRequest extends PageParam implements Serializable {
+public class UserQueryDTO extends PageParam implements Serializable {
     /**
      * id
      */

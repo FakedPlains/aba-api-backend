@@ -1,7 +1,13 @@
 package cloud.zfwproject.abaapi.service.service;
 
+import cloud.zfwproject.abaapi.service.model.dto.userinterfaceinfo.UserInterfaceInfoAddDTO;
+import cloud.zfwproject.abaapi.service.model.dto.userinterfaceinfo.UserInterfaceInfoQueryDTO;
+import cloud.zfwproject.abaapi.service.model.dto.userinterfaceinfo.UserInterfaceInfoUpdateDTO;
 import cloud.zfwproject.abaapi.service.model.po.UserInterfaceInfo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author 46029
@@ -10,4 +16,15 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
 
+    long addUserInterfaceInfo(UserInterfaceInfoAddDTO userInterfaceInfoAddDTO);
+
+    boolean deleteUserInterfaceInfo(Long id);
+
+    boolean updateUserInterfaceInfo(UserInterfaceInfoUpdateDTO userInterfaceInfoUpdateDTO);
+
+    UserInterfaceInfo getUserInterfaceInfoById(long id);
+
+    List<UserInterfaceInfo> listUserInterfaceInfo(UserInterfaceInfoQueryDTO userInterfaceInfoQueryDTO);
+
+    Page<UserInterfaceInfo> listUserInterfaceInfoByPage(UserInterfaceInfoQueryDTO userInterfaceInfoQueryDTO);
 }

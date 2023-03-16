@@ -3,8 +3,11 @@ package cloud.zfwproject.abaapi.service.service.impl;
 import cloud.zfwproject.abaapi.common.exception.BusinessException;
 import cloud.zfwproject.abaapi.common.model.ResponseCode;
 import cloud.zfwproject.abaapi.service.mapper.UserMapper;
-import cloud.zfwproject.abaapi.service.model.dto.user.UserQueryRequest;
+import cloud.zfwproject.abaapi.service.model.dto.DeleteDTO;
+import cloud.zfwproject.abaapi.service.model.dto.user.UserAddDTO;
+import cloud.zfwproject.abaapi.service.model.dto.user.UserQueryDTO;
 import cloud.zfwproject.abaapi.service.model.dto.user.UserRegisterDTO;
+import cloud.zfwproject.abaapi.service.model.dto.user.UserUpdateDTO;
 import cloud.zfwproject.abaapi.service.model.po.User;
 import cloud.zfwproject.abaapi.service.model.vo.UserVO;
 import cloud.zfwproject.abaapi.service.service.UserService;
@@ -46,7 +49,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String userPassword = userRegisterDTO.getUserPassword();
         synchronized (userAccount.intern()) {
             // 2.判断账号是否重复
-            Long count = new LambdaQueryChainWrapper<>(baseMapper)
+            Long count = this.lambdaQuery()
                     .eq(User::getUserAccount, userAccount)
                     .count();
             if (count > 0) {
@@ -74,7 +77,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public User getUserByUserAccount(String userAccount) {
-        return new LambdaQueryChainWrapper<>(baseMapper)
+        return this.lambdaQuery()
                 .eq(User::getUserAccount, userAccount)
                 .one();
     }
@@ -82,16 +85,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     /**
      * 分页获取用户数据
      *
-     * @param userQueryRequest 用户查询分页庆请求
+     * @param userQueryDTO 用户查询分页庆请求
      * @return 分页数据
      */
     @Override
-    public Page<UserVO> getUserPage(UserQueryRequest userQueryRequest) {
+    public Page<UserVO> getUserPage(@Validated UserQueryDTO userQueryDTO) {
         User userQuery = new User();
-        BeanUtil.copyProperties(userQueryRequest, userQuery);
+        BeanUtil.copyProperties(userQueryDTO, userQuery);
         Page<User> userPage = new LambdaQueryChainWrapper<>(baseMapper)
                 .setEntity(userQuery)
-                .page(new Page<>(userQueryRequest.getCurrent(), userQueryRequest.getPageSize()));
+                .page(new Page<>(userQueryDTO.getCurrent(), userQueryDTO.getPageSize()));
         List<UserVO> userVOS = userPage.getRecords().stream()
                 .map(user -> {
                     UserVO userVO = new UserVO();
@@ -102,6 +105,42 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         Page<UserVO> userVOPage = new PageDTO<>(userPage.getCurrent(), userPage.getSize(), userPage.getTotal());
         userVOPage.setRecords(userVOS);
         return userVOPage;
+    }
+
+    /**
+     * 添加用户
+     *
+     * @param userAddDTO 添加用户数据
+     * @return 用户 id
+     */
+    @Override
+    public Long addUser(@Validated UserAddDTO userAddDTO) {
+        User user = new User();
+        BeanUtil.copyProperties(userAddDTO, user);
+        user.setUserPassword("111111");
+        boolean save = this.save(user);
+        if (!save) {
+            throw new BusinessException(ResponseCode.SYSTEM_ERROR, "添加失败，数据库错误");
+        }
+        return user.getId();
+    }
+
+    /**
+     * 更新用户
+     *
+     * @param userUpdateDTO 更新用户数据
+     * @return 是否成功
+     */
+    @Override
+    public Boolean updateUser(@Validated UserUpdateDTO userUpdateDTO) {
+        User user = new User();
+        BeanUtil.copyProperties(userUpdateDTO, user);
+        return this.updateById(user);
+    }
+
+    @Override
+    public Boolean deleteUser(@Validated DeleteDTO deleteDTO) {
+        return this.removeById(deleteDTO.getId());
     }
 
 }
