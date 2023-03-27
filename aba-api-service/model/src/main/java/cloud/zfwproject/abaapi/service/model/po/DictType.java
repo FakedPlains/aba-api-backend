@@ -1,12 +1,10 @@
 package cloud.zfwproject.abaapi.service.model.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import lombok.Data;
 
 /**
  * 字典类型表
@@ -27,14 +25,19 @@ public class DictType implements Serializable {
     private String name;
 
     /**
-     * 字典类型代码
+     * 字典类型描述
      */
-    private String code;
+    private String description;
 
     /**
      * 状态
      */
     private Integer status;
+
+    /**
+     * 创建用户
+     */
+    private Long userId;
 
     /**
      * 创建时间
@@ -49,6 +52,7 @@ public class DictType implements Serializable {
     /**
      * 是否删除
      */
+    @TableLogic
     private Integer isDelete;
 
     @TableField(exist = false)

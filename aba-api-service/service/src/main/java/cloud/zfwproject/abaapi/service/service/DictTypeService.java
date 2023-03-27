@@ -1,8 +1,12 @@
 package cloud.zfwproject.abaapi.service.service;
 
 
+import cloud.zfwproject.abaapi.service.model.dto.dict.DictTypeAddRequest;
+import cloud.zfwproject.abaapi.service.model.dto.dict.DictTypeUpdateRequest;
 import cloud.zfwproject.abaapi.service.model.po.DictType;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author 46029
@@ -11,4 +15,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface DictTypeService extends IService<DictType> {
 
+    List<DictType> getAllDictType();
+
+    boolean addDictType(DictTypeAddRequest dictTypeAddRequest);
+
+    boolean deleteDictType(Long id);
+
+    boolean updateDictType(DictTypeUpdateRequest dictTypeUpdateRequest);
 }

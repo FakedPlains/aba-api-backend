@@ -3,6 +3,7 @@ package cloud.zfwproject.abaapi.service.mapper;
 
 import cloud.zfwproject.abaapi.service.model.po.DictData;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author 46029
@@ -10,6 +11,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2023-03-27 15:27:00
 * @Entity generator.domain.DictData
 */
+@Mapper
 public interface DictDataMapper extends BaseMapper<DictData> {
 
 }

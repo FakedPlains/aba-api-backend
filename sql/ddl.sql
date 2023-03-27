@@ -73,17 +73,20 @@ create table if not exists user_interface_info
     `is_delete`         tinyint  default 0                 not null comment '是否删除'
 ) comment '用户接口关系表';
 
+drop table if exists `dict_type`;
 create table if not exists `dict_type`
 (
     `id`          bigint auto_increment comment 'id' primary key,
-    `name`        varchar(128)                       not null comment '字典类型名称',
-    `code`        char(3)                            not null comment '字典类型代码',
+    `name`        varchar(20)                        not null comment '字典类型名称',
+    `description`        varchar(100)                       null comment '字典类型描述',
     `status`      tinyint                            not null default 0 comment '状态',
+    `user_id`     bigint                             not null comment '创建用户',
     `create_time` datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     `update_time` datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     `is_delete`   tinyint  default 0                 not null comment '是否删除'
 ) comment '字典类型表';
 
+drop table if exists `dict_data`;
 create table if not exists `dict_data`
 (
     `id`           bigint auto_increment comment 'id' primary key,
@@ -94,6 +97,7 @@ create table if not exists `dict_data`
     `is_default`   boolean                            not null default false comment '是否默认',
     `style`        varchar(128)                       null comment '样式',
     `status`       tinyint                            not null default 0 comment '状态',
+    `user_id`      bigint                             not null comment '创建用户',
     `create_time`  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     `update_time`  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     `is_delete`    tinyint  default 0                 not null comment '是否删除'
