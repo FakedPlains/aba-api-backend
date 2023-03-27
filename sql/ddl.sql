@@ -25,36 +25,38 @@ create table if not exists `user`
 ) comment '用户';
 
 -- 接口表
-create table if not exists interface_info
+drop table if exists `interface_info`;
+create table if not exists `interface_info`
 (
     `id`           bigint unsigned auto_increment comment 'id' primary key,
-    `name`         varchar(256)                       not null comment '接口名称',
-    `description`  varchar(256)                       null comment '描述',
-    `url`          varchar(512)                       not null comment '接口地址',
-    `method`       varchar(32)                        not null comment '请求类型',
-    `content_type` varchar(128)                       not null comment '内容类型',
-    `status`       tinyint                            not null default 0 comment '接口状态（0-关闭 1-开启）',
-    `user_id`      bigint                             not null comment '创建人',
-    `create_time`  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-    `update_time`  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    `is_delete`    tinyint  default 0                 not null comment '是否删除'
+    `name`         varchar(256) not null comment '接口名称',
+    `description`  varchar(256) null comment '描述',
+    `url`          varchar(512) not null comment '接口地址',
+    `method`       tinyint      not null default 0 comment '请求类型',
+    `content_type` tinyint      not null default 0 comment '内容类型',
+    `status`       tinyint      not null default 0 comment '接口状态（0-关闭 1-开启）',
+    `user_id`      bigint       not null comment '创建人',
+    `create_time`  datetime              default CURRENT_TIMESTAMP not null comment '创建时间',
+    `update_time`  datetime              default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    `is_delete`    tinyint               default 0 not null comment '是否删除'
 ) comment '接口信息表';
 
 -- 接口请求参数
+drop table if exists `interface_param`;
 create table if not exists `interface_param`
 (
     `id`                bigint unsigned auto_increment comment 'id' primary key,
-    `interface_info_id` bigint                                    not null comment '接口 id',
-    `name`              varchar(64)                               not null comment '参数名称',
-    `type`              varchar(32)                               not null comment '参数类型',
-    `is_required`       tinyint         default 0 comment '是否必填',
-    `max_length`        int comment '最大长度',
-    `description`       varchar(512) comment '描述',
-    `parent_id`         bigint unsigned default 0 comment '父 id',
-    `style`             tinyint unsigned comment '类型 0:path 1:query 2:body 3:header 4:返回参数',
-    `create_time`       datetime        default CURRENT_TIMESTAMP not null comment '创建时间',
-    `update_time`       datetime        default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    `is_delete`         tinyint         default 0                 not null comment '是否删除'
+    `interface_info_id` bigint           not null comment '接口 id',
+    `name`              varchar(64)      not null comment '参数名称',
+    `type`              tinyint          not null default 0 comment '参数类型',
+    `is_required`       tinyint          not null default 0 comment '是否必填',
+    `max_length`        int              null comment '最大长度',
+    `description`       varchar(512)     null comment '描述',
+    `parent_id`         bigint unsigned  not null default 0 comment '父 id',
+    `style`             tinyint unsigned not null default 0 comment '类型 0:path 1:query 2:body 3:header 4:返回参数',
+    `create_time`       datetime                  default CURRENT_TIMESTAMP not null comment '创建时间',
+    `update_time`       datetime                  default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    `is_delete`         tinyint                   default 0 not null comment '是否删除'
 ) comment '接口请求参数信息表';
 
 -- 用户接口关系表
@@ -71,14 +73,28 @@ create table if not exists user_interface_info
     `is_delete`         tinyint  default 0                 not null comment '是否删除'
 ) comment '用户接口关系表';
 
--- 数据字典表
-create table if not exists `dictionary`
+create table if not exists `dict_type`
 (
     `id`          bigint auto_increment comment 'id' primary key,
-    `name`        varchar(128)                       not null comment '数据字典名称',
-    `code`        char(3)                            not null comment '数据字典代码',
-    `item_values` json                               not null comment '数据字典项',
+    `name`        varchar(128)                       not null comment '字典类型名称',
+    `code`        char(3)                            not null comment '字典类型代码',
+    `status`      tinyint                            not null default 0 comment '状态',
     `create_time` datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     `update_time` datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     `is_delete`   tinyint  default 0                 not null comment '是否删除'
-) comment '数据字典表';
+) comment '字典类型表';
+
+create table if not exists `dict_data`
+(
+    `id`           bigint auto_increment comment 'id' primary key,
+    `dict_type_id` bigint                             not null comment '字典类型 id',
+    `name`         varchar(128)                       not null comment '字典数据名称',
+    `code`         char(6)                            not null comment '字典数据代码',
+    `value`        varchar(128)                       not null comment '字典数据值',
+    `is_default`   boolean                            not null default false comment '是否默认',
+    `style`        varchar(128)                       null comment '样式',
+    `status`       tinyint                            not null default 0 comment '状态',
+    `create_time`  datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    `update_time`  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    `is_delete`    tinyint  default 0                 not null comment '是否删除'
+) comment '字典数据表';

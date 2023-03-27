@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>cloud.zfwproject</groupId>
-            <artifactId>aba-api-interface</artifactId>
+            <artifactId>interface</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

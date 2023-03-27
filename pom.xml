@@ -10,7 +10,6 @@
     <modules>
         <module>aba-api-common</module>
         <module>aba-api-gateway</module>
-        <module>aba-api-interface</module>
         <module>aba-api-service</module>
         <module>aba-api-client-sdk-spring</module>
         <module>aba-api-server</module>
