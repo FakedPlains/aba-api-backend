@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cloud.zfwproject.abaapi.service.mapper.DictDataMapper">
+
+    <resultMap id="BaseResultMap" type="cloud.zfwproject.abaapi.service.model.po.DictData">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="dictTypeId" column="dict_type_id" jdbcType="BIGINT"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="code" column="code" jdbcType="CHAR"/>
+            <result property="value" column="value" jdbcType="VARCHAR"/>
+            <result property="isDefault" column="is_default" jdbcType="TINYINT"/>
+            <result property="style" column="style" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,dict_type_id,name,
+        code,value,is_default,
+        style,status,create_time,
+        update_time,is_delete
+    </sql>
+</mapper>
