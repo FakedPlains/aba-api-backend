@@ -2,6 +2,7 @@ package cloud.zfwproject.abaapi.client.sdk.client;
 
 import cloud.zfwproject.abaapi.client.sdk.model.GetRequest;
 import cloud.zfwproject.abaapi.client.sdk.util.SignUtils;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.http.HttpRequest;
 
@@ -19,7 +20,7 @@ public class AbaApiClient {
     private String accessKey;
     private String secretKey;
 
-    private static final String HOST = "http://localhost:20001/";
+    private static final String HOST = "http://localhost:10002/";
 
     public AbaApiClient(String accessKey, String secretKey) {
         this.accessKey = accessKey;
@@ -27,9 +28,10 @@ public class AbaApiClient {
     }
 
     public String get(GetRequest getRequest) {
-        return HttpRequest.get(HOST + "get")
+        Map<String, Object> map = BeanUtil.beanToMap(getRequest);
+        return HttpRequest.get(HOST + "test")
                 .addHeaders(getHeaderMap(getRequest.getName()))
-                .body(getRequest.getName())
+                .form(map)
                 .execute()
                 .body();
     }

@@ -42,8 +42,8 @@ public class UserController {
 
     @PostMapping("login")
     public ResponseResult<String> login(@RequestBody @Validated UserLoginDTO userLoginDTO) {
-        System.out.println(userLoginDTO);
-        return ResponseUtils.success();
+        String token = userService.login(userLoginDTO);
+        return ResponseUtils.success(token);
     }
 
     @GetMapping("current")
@@ -66,6 +66,17 @@ public class UserController {
     @GetMapping("account/{userAccount}")
     public ResponseResult<User> getUserByUserAccount(@PathVariable("userAccount") String userAccount) {
         User user = userService.getUserByUserAccount(userAccount);
+        return ResponseUtils.success(user);
+    }
+
+    /**
+     * 根据 accessKey 获取用户信息
+     * @param accessKey accessKey
+     * @return 用户信息
+     */
+    @GetMapping("access/{accessKey}")
+    public ResponseResult<User> getUserByAccessKey(@PathVariable String accessKey) {
+        User user =  userService.getUserByAccessKey(accessKey);
         return ResponseUtils.success(user);
     }
 

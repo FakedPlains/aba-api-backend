@@ -1,14 +1,7 @@
 server:
-  port: 10001
+  port: 10002
 
 spring:
-  cloud:
-    gateway:
-      routes:
-        - id: api-service
-          uri: lb://aba-api-service
-          predicates:
-            - Path=/api/**
   redis:
     host: 192.168.10.11
     port: 6379

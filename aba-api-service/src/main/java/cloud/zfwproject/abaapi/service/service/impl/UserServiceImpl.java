@@ -2,25 +2,34 @@ package cloud.zfwproject.abaapi.service.service.impl;
 
 import cloud.zfwproject.abaapi.common.exception.BusinessException;
 import cloud.zfwproject.abaapi.common.model.ResponseCode;
+import cloud.zfwproject.abaapi.common.model.SimpleUser;
 import cloud.zfwproject.abaapi.service.mapper.UserMapper;
 import cloud.zfwproject.abaapi.service.model.dto.DeleteDTO;
-import cloud.zfwproject.abaapi.service.model.dto.user.UserAddDTO;
-import cloud.zfwproject.abaapi.service.model.dto.user.UserQueryDTO;
-import cloud.zfwproject.abaapi.service.model.dto.user.UserRegisterDTO;
-import cloud.zfwproject.abaapi.service.model.dto.user.UserUpdateDTO;
+import cloud.zfwproject.abaapi.service.model.dto.user.*;
 import cloud.zfwproject.abaapi.service.model.po.User;
 import cloud.zfwproject.abaapi.service.model.vo.UserVO;
 import cloud.zfwproject.abaapi.service.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static cloud.zfwproject.abaapi.common.constant.RedisConstants.LOGIN_USER_TTL;
+import static cloud.zfwproject.abaapi.common.constant.RedisConstants.USER_LOGIN_KEY_PREFIX;
 
 /**
  * @author 46029
@@ -31,6 +40,36 @@ import java.util.stream.Collectors;
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         implements UserService {
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Override
+    public String login(UserLoginDTO userLoginDTO) {
+        /*if (!StrUtil.isBlank(oldToken)) {
+            return oldToken;
+        }*/
+        // 1.根据邮箱查询用户
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_account", userLoginDTO.getUserAccount());
+        User user = baseMapper.selectOne(wrapper);
+        // 2.判断用户是否存在
+        if (user == null)
+            throw new BusinessException("用户不存在");
+        // 3.判断密码是否正确
+        String password = userLoginDTO.getUserPassword();
+        String md5 = SecureUtil.md5(password);
+        if (!md5.equals(user.getUserPassword()))
+            throw new BusinessException("密码错误");
+        // 4.随机生成 token 作为登录令牌
+        String token = UUID.randomUUID().toString(true);
+        // 5.保存用户到 redis
+        String tokenKey = USER_LOGIN_KEY_PREFIX + token;
+        SimpleUser simpleUser = BeanUtil.copyProperties(user, SimpleUser.class);
+        String str = JSONUtil.toJsonStr(simpleUser);
+        stringRedisTemplate.opsForValue().set(tokenKey, str, LOGIN_USER_TTL, TimeUnit.MINUTES);
+        return token;
+    }
 
     /**
      * 用户注册
@@ -56,11 +95,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                 throw new BusinessException(ResponseCode.INVALID_PARAMS, "账号重复");
             }
             //TODO 3.密码加密、生成用户名、全局唯一 Id 生成
-
+            String md5 = SecureUtil.md5(userPassword);
             // 4.插入数据
             User user = new User();
             user.setUserAccount(userAccount);
-            user.setUserPassword(userPassword);
+            user.setUserPassword(md5);
             boolean save = this.save(user);
             if (!save) {
                 throw new BusinessException(ResponseCode.SYSTEM_ERROR, "注册失败，数据库错误");
@@ -141,6 +180,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public Boolean deleteUser(@Validated DeleteDTO deleteDTO) {
         return this.removeById(deleteDTO.getId());
+    }
+
+    /**
+     * 根据 accessKey 获取用户信息
+     *
+     * @param accessKey accessKey
+     * @return 用户信息
+     */
+    @Override
+    public User getUserByAccessKey(String accessKey) {
+        return this.lambdaQuery()
+                .eq(StrUtil.isNotBlank(accessKey), User::getAccessKey, accessKey)
+                .select(User::getId, User::getAccessKey, User::getSecretKey)
+                .one();
     }
 
 }

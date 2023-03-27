@@ -5,12 +5,14 @@ import cloud.zfwproject.abaapi.common.model.ResponseCode;
 import cloud.zfwproject.abaapi.common.model.ResponseResult;
 import cloud.zfwproject.abaapi.common.util.ResponseUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,8 +24,8 @@ import java.util.stream.Collectors;
  * @date 2023/3/6 14:41
  */
 @Slf4j
-@RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
+
     /**
      * 处理参数异常
      *
@@ -61,5 +63,10 @@ public class GlobalExceptionHandler {
     public ResponseResult<?> processException(Exception e) {
         log.error("runtimeException", e);
         return ResponseUtils.fail(e.getMessage());
+    }
+
+    @Override
+    public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
+        return null;
     }
 }

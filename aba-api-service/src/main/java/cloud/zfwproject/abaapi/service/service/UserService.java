@@ -1,10 +1,7 @@
 package cloud.zfwproject.abaapi.service.service;
 
 import cloud.zfwproject.abaapi.service.model.dto.DeleteDTO;
-import cloud.zfwproject.abaapi.service.model.dto.user.UserAddDTO;
-import cloud.zfwproject.abaapi.service.model.dto.user.UserQueryDTO;
-import cloud.zfwproject.abaapi.service.model.dto.user.UserRegisterDTO;
-import cloud.zfwproject.abaapi.service.model.dto.user.UserUpdateDTO;
+import cloud.zfwproject.abaapi.service.model.dto.user.*;
 import cloud.zfwproject.abaapi.service.model.po.User;
 import cloud.zfwproject.abaapi.service.model.vo.UserVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -16,6 +13,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @createDate 2023-03-12 13:44:10
  */
 public interface UserService extends IService<User> {
+
+    String login(UserLoginDTO userLoginDTO);
 
     /**
      * 用户注册
@@ -64,4 +63,11 @@ public interface UserService extends IService<User> {
      * @return 是否成功
      */
     Boolean deleteUser(DeleteDTO deleteDTO);
+
+    /**
+     * 根据 accessKey 获取用户信息
+     * @param accessKey accessKey
+     * @return 用户信息
+     */
+    User getUserByAccessKey(String accessKey);
 }

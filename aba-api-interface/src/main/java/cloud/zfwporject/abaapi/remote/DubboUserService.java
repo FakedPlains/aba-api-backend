@@ -8,4 +8,6 @@ package cloud.zfwporject.abaapi.remote;
  */
 public interface DubboUserService {
     String getUserByUserAccount(String userAccount);
+
+    String getUserByAccessKey(String accessKey);
 }

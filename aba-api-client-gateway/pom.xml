@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aba-api-gateway</artifactId>
+    <artifactId>aba-api-client-gateway</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -64,6 +64,11 @@
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo-spring-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cloud.zfwproject</groupId>
+            <artifactId>aba-api-client-sdk-spring</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
-
 </project>

@@ -16,7 +16,7 @@ import javax.annotation.Resource;
  */
 @Service
 @DubboService
-public class DubboDubboUserServiceImpl implements DubboUserService {
+public class DubboUserServiceImpl implements DubboUserService {
 
     @Resource
     private UserService userService;
@@ -25,5 +25,11 @@ public class DubboDubboUserServiceImpl implements DubboUserService {
     public String getUserByUserAccount(String userAccount) {
         User user = userService.getUserByUserAccount(userAccount);
         return user.getUserPassword();
+    }
+
+    @Override
+    public String getUserByAccessKey(String accessKey) {
+        User user = userService.getUserByAccessKey(accessKey);
+        return user == null ? null : user.getSecretKey();
     }
 }
