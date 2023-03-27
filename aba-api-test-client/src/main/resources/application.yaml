@@ -1,0 +1,7 @@
+server:
+  port: 30010
+
+abaapi:
+  client:
+    accessKey: 123123
+    secretKey: 123123
