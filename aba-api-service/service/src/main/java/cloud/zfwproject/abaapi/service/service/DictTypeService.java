@@ -22,4 +22,6 @@ public interface DictTypeService extends IService<DictType> {
     boolean deleteDictType(Long id);
 
     boolean updateDictType(DictTypeUpdateRequest dictTypeUpdateRequest);
+
+    DictType getDictTypeById(Long typeId);
 }

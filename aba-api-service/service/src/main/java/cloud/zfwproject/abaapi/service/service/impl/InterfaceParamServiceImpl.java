@@ -2,8 +2,8 @@ package cloud.zfwproject.abaapi.service.service.impl;
 
 
 import cloud.zfwproject.abaapi.service.mapper.InterfaceRequestParamsMapper;
-import cloud.zfwproject.abaapi.service.model.po.InterfaceRequestParams;
-import cloud.zfwproject.abaapi.service.service.InterfaceRequestParamsService;
+import cloud.zfwproject.abaapi.service.model.po.InterfaceParam;
+import cloud.zfwproject.abaapi.service.service.InterfaceParamService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 * @createDate 2023-03-13 19:39:47
 */
 @Service("interfaceRequestParamsService")
-public class InterfaceRequestParamsServiceImpl extends ServiceImpl<InterfaceRequestParamsMapper, InterfaceRequestParams>
-    implements InterfaceRequestParamsService {
+public class InterfaceParamServiceImpl extends ServiceImpl<InterfaceRequestParamsMapper, InterfaceParam>
+    implements InterfaceParamService {
 
 }
 

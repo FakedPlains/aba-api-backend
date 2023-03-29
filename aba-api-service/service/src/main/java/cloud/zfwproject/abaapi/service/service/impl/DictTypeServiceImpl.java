@@ -65,11 +65,15 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictType>
         Long userId = UserHolder.getUser().getId();
         DictType dictType = new DictType();
         BeanUtil.copyProperties(dictTypeUpdateRequest, dictType);
-
         return this.lambdaUpdate()
+                .eq(DictType::getId, dictType.getId())
                 .eq(DictType::getUserId, userId)
-                .setEntity(dictType)
-                .update();
+                .update(dictType);
+    }
+
+    @Override
+    public DictType getDictTypeById(Long typeId) {
+        return this.getById(typeId);
     }
 }
 

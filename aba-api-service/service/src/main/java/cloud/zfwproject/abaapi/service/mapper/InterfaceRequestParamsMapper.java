@@ -1,6 +1,6 @@
 package cloud.zfwproject.abaapi.service.mapper;
 
-import cloud.zfwproject.abaapi.service.model.po.InterfaceRequestParams;
+import cloud.zfwproject.abaapi.service.model.po.InterfaceParam;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 * @Entity generator.domain.InterfaceRequestParams
 */
 @Mapper
-public interface InterfaceRequestParamsMapper extends BaseMapper<InterfaceRequestParams> {
+public interface InterfaceRequestParamsMapper extends BaseMapper<InterfaceParam> {
 
 }
 

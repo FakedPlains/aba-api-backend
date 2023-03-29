@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 
 /**
  * 接口请求参数信息表
- * @TableName interface_request_params
+ * @TableName interface_param
  */
-@TableName(value ="interface_request_params")
+@TableName(value ="interface_param")
 @Data
-public class InterfaceRequestParams implements Serializable {
+public class InterfaceParam implements Serializable {
     /**
      * id
      */
@@ -32,7 +32,7 @@ public class InterfaceRequestParams implements Serializable {
     /**
      * 参数类型
      */
-    private String type;
+    private Integer type;
 
     /**
      * 是否必填
@@ -48,6 +48,16 @@ public class InterfaceRequestParams implements Serializable {
      * 描述
      */
     private String description;
+
+    /**
+     * 父 id
+     */
+    private Long parentId;
+
+    /**
+     * 类型 0:path 1:query 2:body 3:header 4:返回参数
+     */
+    private Integer style;
 
     /**
      * 创建时间

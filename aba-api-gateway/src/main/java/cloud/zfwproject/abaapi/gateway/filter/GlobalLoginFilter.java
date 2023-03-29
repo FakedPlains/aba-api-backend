@@ -1,6 +1,7 @@
 package cloud.zfwproject.abaapi.gateway.filter;
 
 import cloud.zfwproject.abaapi.common.model.ResponseCode;
+import cloud.zfwproject.abaapi.common.model.SimpleUser;
 import cloud.zfwproject.abaapi.common.util.ResponseUtils;
 import cloud.zfwproject.abaapi.common.util.UserHolder;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -31,7 +32,8 @@ public class GlobalLoginFilter implements GlobalFilter, Ordered {
         }
 
         // 1.获取用户信息，判断用户是否存在
-        if (UserHolder.getUser() == null) {
+        SimpleUser user = UserHolder.getUser();
+        if (user == null) {
             // 2.不存在，拦截
             return ResponseUtils.outFailed(response, ResponseUtils.fail(ResponseCode.PERMISSION_DENIED));
         }

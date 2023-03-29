@@ -28,6 +28,12 @@ public class DictTypeController {
     @Resource
     private DictTypeService dictTypeService;
 
+    @GetMapping("type/{typeId}")
+    public ResponseResult<DictType> getDictTypeById(@PathVariable Long typeId) {
+        DictType dictType = dictTypeService.getDictTypeById(typeId);
+        return ResponseUtils.success(dictType);
+    }
+
     @GetMapping("type")
     public ResponseResult<List<DictType>> getAllDictType() {
         List<DictType> dictTypes = dictTypeService.getAllDictType();

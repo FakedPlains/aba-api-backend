@@ -20,6 +20,11 @@ public class InterfaceInfo implements Serializable {
     private Long id;
 
     /**
+     * 唯一标识 md5(method:url)
+     */
+    private String dataId;
+
+    /**
      * 接口名称
      */
     private String name;
@@ -37,22 +42,12 @@ public class InterfaceInfo implements Serializable {
     /**
      * 请求类型
      */
-    private String method;
+    private Integer method;
 
     /**
-     * 请求参数
+     * 内容类型
      */
-    private String requestParams;
-
-    /**
-     * 请求头
-     */
-    private String requestHeader;
-
-    /**
-     * 响应头
-     */
-    private String responseHeader;
+    private Integer contentType;
 
     /**
      * 接口状态（0-关闭 1-开启）

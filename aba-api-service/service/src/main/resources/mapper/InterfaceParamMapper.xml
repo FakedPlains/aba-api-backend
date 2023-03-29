@@ -4,14 +4,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cloud.zfwproject.abaapi.service.mapper.InterfaceRequestParamsMapper">
 
-    <resultMap id="BaseResultMap" type="cloud.zfwproject.abaapi.service.model.po.InterfaceRequestParams">
+    <resultMap id="BaseResultMap" type="cloud.zfwproject.abaapi.service.model.po.InterfaceParam">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="interfaceInfoId" column="interface_info_id" jdbcType="BIGINT"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
-            <result property="type" column="type" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="TINYINT"/>
             <result property="isRequired" column="is_required" jdbcType="TINYINT"/>
             <result property="maxLength" column="max_length" jdbcType="INTEGER"/>
             <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
+            <result property="style" column="style" jdbcType="TINYINT"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
@@ -20,7 +22,7 @@
     <sql id="Base_Column_List">
         id,interface_info_id,name,
         type,is_required,max_length,
-        description,create_time,update_time,
-        is_delete
+        description,parent_id,style,
+        create_time,update_time,is_delete
     </sql>
 </mapper>

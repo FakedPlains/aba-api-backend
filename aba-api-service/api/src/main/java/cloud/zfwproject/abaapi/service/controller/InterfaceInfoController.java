@@ -3,10 +3,11 @@ package cloud.zfwproject.abaapi.service.controller;
 import cloud.zfwproject.abaapi.common.model.ResponseResult;
 import cloud.zfwproject.abaapi.common.util.ResponseUtils;
 import cloud.zfwproject.abaapi.service.model.dto.DeleteDTO;
-import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.InterfaceInfoAddDTO;
+import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.InterfaceInfoAddRequest;
 import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.InterfaceInfoQueryDTO;
 import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.InterfaceInfoUpdateDTO;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceInfo;
+import cloud.zfwproject.abaapi.service.model.vo.InterfaceInfoVO;
 import cloud.zfwproject.abaapi.service.service.InterfaceInfoService;
 import cloud.zfwproject.abaapi.service.service.UserService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -23,7 +24,7 @@ import java.util.List;
  * @date 2023/3/13 19:44
  */
 @RestController
-@RequestMapping("interface-info")
+@RequestMapping("interface/info")
 public class InterfaceInfoController {
 
     @Resource
@@ -39,7 +40,7 @@ public class InterfaceInfoController {
      * @return 返回接口 id
      */
     @PostMapping()
-    public ResponseResult<Long> addInterfaceInfo(@Validated @RequestBody InterfaceInfoAddDTO interfaceInfoAddDTO) {
+    public ResponseResult<Long> addInterfaceInfo(@Validated @RequestBody InterfaceInfoAddRequest interfaceInfoAddDTO) {
         Long id = interfaceInfoService.addInterfaceInfo(interfaceInfoAddDTO);
         return ResponseUtils.success(id);
     }
@@ -75,8 +76,8 @@ public class InterfaceInfoController {
      * @return 接口信息
      */
     @GetMapping("/{id}")
-    public ResponseResult<InterfaceInfo> getInterfaceInfoById(@PathVariable long id) {
-        InterfaceInfo interfaceInfo = interfaceInfoService.getInterfaceInfoById(id);
+    public ResponseResult<InterfaceInfoVO> getInterfaceInfoById(@PathVariable long id) {
+        InterfaceInfoVO interfaceInfo = interfaceInfoService.getInterfaceInfoById(id);
         return ResponseUtils.success(interfaceInfo);
     }
 
@@ -142,7 +143,7 @@ public class InterfaceInfoController {
         if (interfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        if (interfaceInfo.getStatus() == InterfaceInfoStatusEnum.OFFLINE.getValue()) {
+        if (interfaceInfo.getStatus() == InterfaceInfoEnum.OFFLINE.getValue()) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口已关闭");
         }
 
