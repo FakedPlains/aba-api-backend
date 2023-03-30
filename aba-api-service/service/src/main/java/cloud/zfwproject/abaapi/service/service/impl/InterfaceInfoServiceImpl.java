@@ -26,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -166,9 +167,25 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         if (id <= 0) {
             throw new BusinessException(ResponseCode.INVALID_PARAMS);
         }
+        // 1.获取接口信息
         InterfaceInfo interfaceInfo = this.getById(id);
         InterfaceInfoVO interfaceInfoVO = new InterfaceInfoVO();
         BeanUtil.copyProperties(interfaceInfo, interfaceInfoVO);
+
+        // 2.获取接口参数信息
+        List<InterfaceParam> interfaceParams = interfaceParamService.getInterfaceParamsByInterfaceId(id);
+        Map<Integer, List<InterfaceParam>> paramsMap = interfaceParams.stream()
+                .collect(Collectors.groupingBy(InterfaceParam::getStyle));
+
+        List<InterfaceParam> requestParams = CollUtil.unionAll(paramsMap.get(InterfaceInfoEnum.Style.PATH.getValue()), paramsMap.get(InterfaceInfoEnum.Style.QUERY.getValue()), paramsMap.get(InterfaceInfoEnum.Style.BODY.getValue()));
+        interfaceInfoVO.setRequestParams(requestParams);
+        List<InterfaceParam> requestHeaders = paramsMap.get(InterfaceInfoEnum.Style.HEADER.getValue());
+        interfaceInfoVO.setRequestHeaders(requestHeaders);
+        List<InterfaceParam> responseParams = paramsMap.get(InterfaceInfoEnum.Style.RETURN.getValue());
+        interfaceInfoVO.setResponseParams(responseParams);
+        List<InterfaceParam> errorCode = paramsMap.get(InterfaceInfoEnum.Style.ERROR.getValue());
+        interfaceInfoVO.setErrorCode(errorCode);
+
         return interfaceInfoVO;
     }
 
