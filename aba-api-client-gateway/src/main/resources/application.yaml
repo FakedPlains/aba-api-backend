@@ -12,7 +12,7 @@ spring:
         - id: forward
           uri: no://op
           predicates:
-            - Path=/**
+            - Header=dataId, ^.{32}$
 
 dubbo:
   application:
