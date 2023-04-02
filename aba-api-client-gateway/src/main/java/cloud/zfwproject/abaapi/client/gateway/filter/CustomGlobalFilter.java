@@ -1,32 +1,41 @@
 package cloud.zfwproject.abaapi.client.gateway.filter;
 
-import cloud.zfwporject.abaapi.remote.DubboUserService;
 import cloud.zfwproject.abaapi.client.sdk.util.SignUtils;
 import cloud.zfwproject.abaapi.common.model.ResponseCode;
 import cloud.zfwproject.abaapi.common.util.ResponseUtils;
+import cloud.zfwproject.abaapi.service.model.po.InterfaceInfo;
+import cloud.zfwproject.abaapi.service.remote.DubboInterfaceInfoService;
+import cloud.zfwproject.abaapi.service.remote.DubboUserService;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.cloud.gateway.route.Route;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR;
 
 /**
  * @author 46029
@@ -40,6 +49,9 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
     @DubboReference
     private DubboUserService userService;
+
+    @DubboReference
+    private DubboInterfaceInfoService interfaceInfoService;
 
     private static final List<String> IP_WHITE_LIST = List.of("127.0.0.1", "0:0:0:0:0:0:0:1");
 
@@ -66,6 +78,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         String body = headers.getFirst("body");
         String timestamp = headers.getFirst("timestamp");
         String sign = headers.getFirst("sign");
+        String dataId = headers.getFirst("dataId");
 
         String secretKey = userService.getUserByAccessKey(accessKey);
         if (StrUtil.isBlank(secretKey)) {
@@ -84,9 +97,37 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         if (StrUtil.isBlank(sign) || !sign.equals(serverSign)) {
             throw new RuntimeException("无权限");
         }
+
         // TODO 4.请求模拟接口是否存在
+        InterfaceInfo interfaceInfo = interfaceInfoService.getInterfaceUrlByDataId(dataId);
+        if (interfaceInfo == null) {
+            return ResponseUtils.outFailed(res, ResponseUtils.fail(ResponseCode.INVALID_PARAMS, "接口不存在"));
+        }
+
         // 5.请求转发，调用接口
-        return handleResponse(exchange, chain);
+        String rawPath = request.getURI().getRawPath();
+        //请求方法
+        HttpMethod method = request.getMethod();
+        //请求参数
+        MultiValueMap<String, String> queryParams = request.getQueryParams();
+        URI uri = UriComponentsBuilder.fromHttpUrl(interfaceInfo.getUrl()).queryParams(queryParams).build().toUri();
+        //替换新的url地址
+        ServerHttpRequest serverHttpRequest = request.mutate()
+                .uri(uri)
+                .method(method)
+                .headers(httpHeaders -> httpHeaders = headers)
+                .build();
+        Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
+        //从新设置Route地址
+        Route newRoute = Route.async()
+                .asyncPredicate(route.getPredicate())
+                .filters(route.getFilters())
+                .id(route.getId())
+                .order(route.getOrder())
+                .uri(uri)
+                .build();
+        exchange.getAttributes().put(GATEWAY_ROUTE_ATTR, newRoute);
+        return handleResponse(exchange.mutate().request(serverHttpRequest).build(), chain);
     }
 
     public Mono<Void> handleResponse(ServerWebExchange exchange, GatewayFilterChain chain) {

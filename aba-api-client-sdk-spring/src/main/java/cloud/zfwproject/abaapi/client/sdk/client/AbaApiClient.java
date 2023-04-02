@@ -30,19 +30,20 @@ public class AbaApiClient {
     public String get(GetRequest getRequest) {
         Map<String, Object> map = BeanUtil.beanToMap(getRequest);
         return HttpRequest.get(HOST + "test")
-                .addHeaders(getHeaderMap(getRequest.getName()))
+                .addHeaders(getHeaderMap(getRequest.getName(), "372835370b65a2f68e9a09bcb29a1aca"))
                 .form(map)
                 .execute()
                 .body();
     }
 
-    private Map<String, String> getHeaderMap(String body) {
+    private Map<String, String> getHeaderMap(String body, String dataId) {
         Map<String, String> header = new HashMap<>();
         header.put("accessKey", accessKey);
         header.put("nonce", RandomUtil.randomNumbers(4));
         header.put("body", body);
         header.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
         header.put("sign", SignUtils.getSign(body, secretKey));
+        header.put("dataId", dataId);
         return header;
     }
 }

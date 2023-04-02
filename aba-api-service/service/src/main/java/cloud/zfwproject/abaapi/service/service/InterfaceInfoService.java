@@ -11,10 +11,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
-* @author 46029
-* @description 针对表【interface_info(接口信息表)】的数据库操作Service
-* @createDate 2023-03-12 21:18:55
-*/
+ * @author 46029
+ * @description 针对表【interface_info(接口信息表)】的数据库操作Service
+ * @createDate 2023-03-12 21:18:55
+ */
 public interface InterfaceInfoService extends IService<InterfaceInfo> {
 
     Page<InterfaceInfo> getInterfaceInfoPages(InterfaceInfoQueryDTO interfaceInfoQueryDTO);
@@ -34,6 +34,13 @@ public interface InterfaceInfoService extends IService<InterfaceInfo> {
     InterfaceInfoVO getInterfaceInfoById(long id);
 
     List<InterfaceInfo> listInterfaceInfo(InterfaceInfoQueryDTO interfaceInfoQueryDTO);
+
+    /**
+     * 根据 dataId 获取接口信息
+     * @param dataId md5(method:url)
+     * @return 接口 url
+     */
+    InterfaceInfo getInterfaceInfoByDataId(String dataId);
 
     boolean onlineInterfaceInfo(Long id);
 

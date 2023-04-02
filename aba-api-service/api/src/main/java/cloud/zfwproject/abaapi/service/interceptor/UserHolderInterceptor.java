@@ -2,9 +2,8 @@ package cloud.zfwproject.abaapi.service.interceptor;
 
 import cloud.zfwproject.abaapi.common.constant.RedisConstants;
 import cloud.zfwproject.abaapi.common.model.SimpleUser;
+import cloud.zfwproject.abaapi.common.service.RedisService;
 import cloud.zfwproject.abaapi.common.util.UserHolder;
-import cn.hutool.json.JSONUtil;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -24,7 +23,7 @@ import static cloud.zfwproject.abaapi.common.constant.CommonConstant.REQUEST_HEA
 public class UserHolderInterceptor implements HandlerInterceptor {
 
     @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    private RedisService redisService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -33,9 +32,8 @@ public class UserHolderInterceptor implements HandlerInterceptor {
 
         // 2.获取 redis 中的用户
         String tokenKey = RedisConstants.USER_LOGIN_KEY_PREFIX + token;
-        String userStr = stringRedisTemplate.opsForValue().get(tokenKey);
 
-        SimpleUser simpleUser = JSONUtil.toBean(userStr, SimpleUser.class);
+        SimpleUser simpleUser = redisService.getFromString(tokenKey, SimpleUser.class);
         UserHolder.saveUser(simpleUser);
 
         return true;

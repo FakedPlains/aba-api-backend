@@ -3,6 +3,7 @@ package cloud.zfwproject.abaapi.service.service.impl;
 import cloud.zfwproject.abaapi.common.exception.BusinessException;
 import cloud.zfwproject.abaapi.common.model.ResponseCode;
 import cloud.zfwproject.abaapi.common.model.SimpleUser;
+import cloud.zfwproject.abaapi.common.service.RedisService;
 import cloud.zfwproject.abaapi.common.util.UserHolder;
 import cloud.zfwproject.abaapi.service.mapper.UserMapper;
 import cloud.zfwproject.abaapi.service.model.dto.DeleteDTO;
@@ -14,13 +15,11 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -43,7 +42,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         implements UserService {
 
     @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    private RedisService redisService;
 
     /**
      * 用户登录
@@ -73,8 +72,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 5.保存用户到 redis
         String tokenKey = USER_LOGIN_KEY_PREFIX + token;
         SimpleUser simpleUser = BeanUtil.copyProperties(user, SimpleUser.class);
-        String str = JSONUtil.toJsonStr(simpleUser);
-        stringRedisTemplate.opsForValue().set(tokenKey, str, LOGIN_USER_TTL, TimeUnit.MINUTES);
+        redisService.setWithString(tokenKey, simpleUser, LOGIN_USER_TTL, TimeUnit.MINUTES);
         return token;
     }
 
@@ -126,7 +124,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException("未登录");
         }
         String tokenKey = USER_LOGIN_KEY_PREFIX + token;
-        stringRedisTemplate.delete(tokenKey);
+        redisService.delete(tokenKey);
         UserHolder.removeUser();
         return true;
     }

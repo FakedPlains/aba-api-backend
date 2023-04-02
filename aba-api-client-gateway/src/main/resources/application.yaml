@@ -6,6 +6,13 @@ spring:
     host: 192.168.10.11
     port: 6379
     password: root
+  cloud:
+    gateway:
+      routes:
+        - id: forward
+          uri: no://op
+          predicates:
+            - Path=/**
 
 dubbo:
   application:

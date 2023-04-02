@@ -68,13 +68,8 @@ public class UserController {
 
     @GetMapping("current")
     public ResponseResult<SimpleUser> current() {
-        SimpleUser simpleUser = new SimpleUser();
-        simpleUser.setUserName("admin1");
-        simpleUser.setUserAccount("admin1");
-        simpleUser.setUserRole("admin");
-        simpleUser.setId(1L);
         SimpleUser user = UserHolder.getUser();
-        return ResponseUtils.success(simpleUser);
+        return ResponseUtils.success(user);
     }
 
     /**

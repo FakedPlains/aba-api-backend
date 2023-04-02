@@ -14,6 +14,7 @@ import cloud.zfwproject.abaapi.service.service.InterfaceInfoService;
 import cloud.zfwproject.abaapi.service.service.InterfaceParamService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -198,6 +199,14 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         return this.lambdaQuery()
                 .setEntity(interfaceInfoQuery)
                 .list();
+    }
+
+    @Override
+    public InterfaceInfo getInterfaceInfoByDataId(String dataId) {
+        return this.lambdaQuery()
+                .eq(StrUtil.isNotBlank(dataId), InterfaceInfo::getDataId, dataId)
+                .select(InterfaceInfo::getUrl)
+                .one();
     }
 
     @Override
