@@ -3,6 +3,7 @@ package cloud.zfwproject.abaapi.service.service.impl;
 import cloud.zfwproject.abaapi.common.exception.BusinessException;
 import cloud.zfwproject.abaapi.common.model.ResponseCode;
 import cloud.zfwproject.abaapi.common.model.SimpleUser;
+import cloud.zfwproject.abaapi.common.util.UserHolder;
 import cloud.zfwproject.abaapi.service.mapper.UserMapper;
 import cloud.zfwproject.abaapi.service.model.dto.DeleteDTO;
 import cloud.zfwproject.abaapi.service.model.dto.user.*;
@@ -44,6 +45,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
+    /**
+     * 用户登录
+     *
+     * @param userLoginDTO 用户登录请求数据
+     * @return 认证 token
+     */
     @Override
     public String login(UserLoginDTO userLoginDTO) {
         /*if (!StrUtil.isBlank(oldToken)) {
@@ -106,6 +113,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             }
             return user.getId();
         }
+    }
+
+    /**
+     * 退出登录
+     *
+     * @return 是否成功
+     */
+    @Override
+    public boolean logout(String token) {
+        if (StrUtil.isBlank(token)) {
+            throw new BusinessException("未登录");
+        }
+        String tokenKey = USER_LOGIN_KEY_PREFIX + token;
+        stringRedisTemplate.delete(tokenKey);
+        UserHolder.removeUser();
+        return true;
     }
 
     /**

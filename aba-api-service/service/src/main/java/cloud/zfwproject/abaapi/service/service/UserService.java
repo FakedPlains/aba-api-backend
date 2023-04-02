@@ -14,6 +14,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserService extends IService<User> {
 
+    /**
+     * 用户登录
+     *
+     * @param userLoginDTO 用户登录请求数据
+     * @return 认证 token
+     */
     String login(UserLoginDTO userLoginDTO);
 
     /**
@@ -23,6 +29,13 @@ public interface UserService extends IService<User> {
      * @return 用户 id
      */
     Long register(UserRegisterDTO userRegisterDTO);
+
+    /**
+     * 退出登录
+     *
+     * @return 是否成功
+     */
+    boolean logout(String token);
 
     /**
      * 根据用户账号获取用户
@@ -70,4 +83,5 @@ public interface UserService extends IService<User> {
      * @return 用户信息
      */
     User getUserByAccessKey(String accessKey);
+
 }

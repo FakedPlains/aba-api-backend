@@ -1,5 +1,6 @@
 package cloud.zfwproject.abaapi.service.controller;
 
+import cloud.zfwproject.abaapi.common.constant.CommonConstant;
 import cloud.zfwproject.abaapi.common.model.ResponseResult;
 import cloud.zfwproject.abaapi.common.model.SimpleUser;
 import cloud.zfwproject.abaapi.common.util.ResponseUtils;
@@ -14,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author 46029
@@ -40,10 +42,28 @@ public class UserController {
         return ResponseUtils.success(userId);
     }
 
+    /**
+     * 用户登录
+     *
+     * @param userLoginDTO 用户登录请求数据
+     * @return 认证 token
+     */
     @PostMapping("login")
     public ResponseResult<String> login(@RequestBody @Validated UserLoginDTO userLoginDTO) {
         String token = userService.login(userLoginDTO);
         return ResponseUtils.success(token);
+    }
+
+    /**
+     * 退出登录
+     *
+     * @return 是否成功
+     */
+    @PostMapping("logout")
+    public ResponseResult<Boolean> logout(HttpServletRequest request) {
+        String token = request.getHeader(CommonConstant.REQUEST_HEADER_TOKEN);
+        boolean res = userService.logout(token);
+        return ResponseUtils.success(res);
     }
 
     @GetMapping("current")
@@ -71,12 +91,13 @@ public class UserController {
 
     /**
      * 根据 accessKey 获取用户信息
+     *
      * @param accessKey accessKey
      * @return 用户信息
      */
     @GetMapping("access/{accessKey}")
     public ResponseResult<User> getUserByAccessKey(@PathVariable String accessKey) {
-        User user =  userService.getUserByAccessKey(accessKey);
+        User user = userService.getUserByAccessKey(accessKey);
         return ResponseUtils.success(user);
     }
 

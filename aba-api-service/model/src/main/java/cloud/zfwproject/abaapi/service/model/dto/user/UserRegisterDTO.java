@@ -23,14 +23,14 @@ public class UserRegisterDTO {
     /**
      * 用户密码
      */
-    @NotBlank(message = "用户账号不能为空")
+    @NotBlank(message = "用户密码不能为空")
     @Length(min = 6, max = 16, message = "密码长度必须在 6 - 16 之间")
     private String repeatPassword;
 
     /**
      * 重复密码
      */
-    @NotBlank(message = "用户账号不能为空")
+    @NotBlank(message = "重复密码不能为空")
     @Length(min = 6, max = 16, message = "密码账号长度必须在 6 - 16 之间")
     private String userAccount;
 }
