@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aba-api
+  labels:
+    app: aba-api
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: aba-api
+      labels:
+        app: aba-api
+    spec:
+      containers:
+        - name: aba-api
+          image: aba-api-client-gateway
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: aba-api
