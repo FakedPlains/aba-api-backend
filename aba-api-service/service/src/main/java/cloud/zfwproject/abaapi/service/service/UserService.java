@@ -84,4 +84,18 @@ public interface UserService extends IService<User> {
      */
     User getUserByAccessKey(String accessKey);
 
+    /**
+     * 根据用 id 获取 secretKey
+     * @param id 用户 id
+     * @return secretKey
+     */
+    String getSecretKeyByUserId(Long id);
+
+    /**
+     * 修改密码
+     *
+     * @param updatePasswordRequest 修改密码请求对象
+     * @return 是否成功
+     */
+    Boolean updatePassword(UserUpdatePasswordRequest updatePasswordRequest);
 }

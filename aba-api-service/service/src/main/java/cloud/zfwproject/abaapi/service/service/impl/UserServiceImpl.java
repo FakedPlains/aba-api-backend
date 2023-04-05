@@ -13,10 +13,12 @@ import cloud.zfwproject.abaapi.service.model.vo.UserVO;
 import cloud.zfwproject.abaapi.service.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -99,12 +101,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             if (count > 0) {
                 throw new BusinessException(ResponseCode.INVALID_PARAMS, "账号重复");
             }
-            //TODO 3.密码加密、生成用户名、全局唯一 Id 生成
+            // 3.密码加密、生成用户名、全局唯一 Id 生成
             String md5 = SecureUtil.md5(userPassword);
-            // 4.插入数据
+            long id = IdUtil.getSnowflakeNextId();
+            // 4. 生成 accessKey、secretKey
+            String accessKey = DigestUtil.md5Hex(userAccount + RandomUtil.randomNumbers(5));
+            String secretKey = DigestUtil.md5Hex(userAccount + RandomUtil.randomNumbers(8));
+            // 5.插入数据
             User user = new User();
+            user.setId(id);
             user.setUserAccount(userAccount);
             user.setUserPassword(md5);
+            user.setAccessKey(accessKey);
+            user.setSecretKey(secretKey);
             boolean save = this.save(user);
             if (!save) {
                 throw new BusinessException(ResponseCode.SYSTEM_ERROR, "注册失败，数据库错误");
@@ -152,7 +161,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public Page<UserVO> getUserPage(@Validated UserQueryDTO userQueryDTO) {
         User userQuery = new User();
         BeanUtil.copyProperties(userQueryDTO, userQuery);
-        Page<User> userPage = new LambdaQueryChainWrapper<>(baseMapper)
+        Page<User> userPage = this.lambdaQuery()
                 .setEntity(userQuery)
                 .page(new Page<>(userQueryDTO.getCurrent(), userQueryDTO.getPageSize()));
         List<UserVO> userVOS = userPage.getRecords().stream()
@@ -215,6 +224,66 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                 .eq(StrUtil.isNotBlank(accessKey), User::getAccessKey, accessKey)
                 .select(User::getId, User::getAccessKey, User::getSecretKey)
                 .one();
+    }
+
+    /**
+     * 根据用 id 获取 secretKey
+     *
+     * @param id 用户 id
+     * @return secretKey
+     */
+    @Override
+    public String getSecretKeyByUserId(Long id) {
+        if (id == null || id <= 0) {
+            throw new BusinessException(ResponseCode.INVALID_PARAMS);
+        }
+        User user = this.lambdaQuery()
+                .eq(User::getId, id)
+                .select(User::getSecretKey)
+                .one();
+        if (user == null) {
+            throw new BusinessException(ResponseCode.INVALID_PARAMS, "用户不存在");
+        }
+        return user.getSecretKey();
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param updatePasswordRequest 修改密码请求对象
+     * @return 是否成功
+     */
+    @Override
+    public Boolean updatePassword(@Validated UserUpdatePasswordRequest updatePasswordRequest) {
+        // 1.判断两次密码是否一致
+        if (!updatePasswordRequest.getNewPassword().equals(updatePasswordRequest.getRepeatPassword())) {
+            throw new BusinessException(ResponseCode.INVALID_PARAMS, "两次输入的密码不一致");
+        }
+
+        // 2.判断旧密码是否相同
+        User user = this.lambdaQuery()
+                .eq(User::getId, updatePasswordRequest.getId())
+                .select(User::getUserPassword)
+                .one();
+        if (user == null) {
+            throw new BusinessException(ResponseCode.INVALID_PARAMS, "用户不存在");
+        }
+        String oldPassword = updatePasswordRequest.getOldPassword();
+        String md5 = SecureUtil.md5(oldPassword);
+        if (!user.getUserPassword().equals(md5)) {
+            throw new BusinessException(ResponseCode.INVALID_PARAMS, "密码错误");
+        }
+
+        // 3.更新密码
+        String newPassword = updatePasswordRequest.getNewPassword();
+        md5 = SecureUtil.md5(newPassword);
+        user.setUserPassword(md5);
+        boolean res = this.updateById(user);
+        if (!res) {
+            throw new BusinessException(ResponseCode.SYSTEM_ERROR, "修改失败");
+        }
+
+        return true;
     }
 
 }

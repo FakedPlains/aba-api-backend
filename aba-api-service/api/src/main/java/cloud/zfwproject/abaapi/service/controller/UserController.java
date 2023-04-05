@@ -66,10 +66,27 @@ public class UserController {
         return ResponseUtils.success(res);
     }
 
+    /**
+     * 获取当前登录用户信息
+     *
+     * @return 用户信息
+     */
     @GetMapping("current")
     public ResponseResult<SimpleUser> current() {
         SimpleUser user = UserHolder.getUser();
         return ResponseUtils.success(user);
+    }
+
+    /**
+     * 获取当前登录用户 secretKey
+     *
+     * @return secretKey
+     */
+    @PostMapping("secretKey")
+    public ResponseResult<String> getSecretKey() {
+        SimpleUser user = UserHolder.getUser();
+        String secretKet = userService.getSecretKeyByUserId(user.getId());
+        return ResponseUtils.success(secretKet);
     }
 
     /**
@@ -141,6 +158,18 @@ public class UserController {
     @DeleteMapping()
     public ResponseResult<Boolean> deleteUser(@RequestBody @Validated DeleteDTO deleteDTO) {
         Boolean result = userService.deleteUser(deleteDTO);
+        return ResponseUtils.success(result);
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param updatePasswordRequest 修改密码请求对象
+     * @return 是否成功
+     */
+    @PutMapping("pass")
+    public ResponseResult<Boolean> updatePassword(@RequestBody @Validated UserUpdatePasswordRequest updatePasswordRequest) {
+        Boolean result = userService.updatePassword(updatePasswordRequest);
         return ResponseUtils.success(result);
     }
 

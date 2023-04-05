@@ -32,11 +32,6 @@ public class UserQueryDTO extends PageParam implements Serializable {
     private String userAccount;
 
     /**
-     * 性别
-     */
-    private Integer gender;
-
-    /**
      * 用户角色: user, admin
      */
     private String userRole;
@@ -46,11 +41,6 @@ public class UserQueryDTO extends PageParam implements Serializable {
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
 
     private static final long serialVersionUID = 1L;
 }

@@ -38,6 +38,11 @@ public class SimpleUser {
     private Integer gender;
 
     /**
+     * accessKey
+     */
+    private String accessKey;
+
+    /**
      * 用户角色: user, admin
      */
     private String userRole;
