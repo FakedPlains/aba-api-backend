@@ -104,8 +104,8 @@ public class InterfaceInfoController {
      * @return 接口分页列表
      */
     @GetMapping("/show")
-    public ResponseResult<Page<InterfaceInfo>> getInterfaceInfoPages(@Validated InterfaceInfoQueryDTO interfaceInfoQueryDTO) {
-        Page<InterfaceInfo> page = interfaceInfoService.getInterfaceInfoPages(interfaceInfoQueryDTO);
+    public ResponseResult<Page<InterfaceInfoVO>> getInterfaceInfoPages(@Validated InterfaceInfoQueryDTO interfaceInfoQueryDTO) {
+        Page<InterfaceInfoVO> page = interfaceInfoService.getInterfaceInfoPages(interfaceInfoQueryDTO);
         return ResponseUtils.success(page);
     }
 
@@ -116,8 +116,8 @@ public class InterfaceInfoController {
      * @return 接口分页列表
      */
     @GetMapping("/page")
-    public ResponseResult<Page<InterfaceInfo>> getShowingInterfaceInfo(@Validated InterfaceInfoQueryDTO interfaceInfoQueryDTO) {
-        Page<InterfaceInfo> page = interfaceInfoService.getShowingInterfaceInfo(interfaceInfoQueryDTO);
+    public ResponseResult<Page<InterfaceInfoVO>> getShowingInterfaceInfo(@Validated InterfaceInfoQueryDTO interfaceInfoQueryDTO) {
+        Page<InterfaceInfoVO> page = interfaceInfoService.getShowingInterfaceInfo(interfaceInfoQueryDTO);
         return ResponseUtils.success(page);
     }
 

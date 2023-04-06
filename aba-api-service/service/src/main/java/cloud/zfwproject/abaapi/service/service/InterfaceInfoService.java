@@ -25,7 +25,7 @@ public interface InterfaceInfoService extends IService<InterfaceInfo> {
      * @param interfaceInfoQueryDTO 接口查询书籍
      * @return 接口分页列表
      */
-    Page<InterfaceInfo> getInterfaceInfoPages(InterfaceInfoQueryDTO interfaceInfoQueryDTO);
+    Page<InterfaceInfoVO> getInterfaceInfoPages(InterfaceInfoQueryDTO interfaceInfoQueryDTO);
 
     /**
      * 创建
@@ -90,7 +90,7 @@ public interface InterfaceInfoService extends IService<InterfaceInfo> {
      * @param interfaceInfoQueryDTO 接口查询书籍
      * @return 接口分页列表
      */
-    Page<InterfaceInfo> getShowingInterfaceInfo(InterfaceInfoQueryDTO interfaceInfoQueryDTO);
+    Page<InterfaceInfoVO> getShowingInterfaceInfo(InterfaceInfoQueryDTO interfaceInfoQueryDTO);
 
     /**
      * 测试调用

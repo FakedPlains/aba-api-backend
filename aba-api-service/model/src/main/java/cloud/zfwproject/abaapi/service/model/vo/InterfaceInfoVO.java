@@ -18,6 +18,11 @@ import java.util.List;
 public class InterfaceInfoVO extends InterfaceInfo implements Serializable {
 
     /**
+     * 创建人
+     */
+    private String userAccount;
+
+    /**
      * 请求头
      */
     private List<InterfaceParam> requestHeaders;

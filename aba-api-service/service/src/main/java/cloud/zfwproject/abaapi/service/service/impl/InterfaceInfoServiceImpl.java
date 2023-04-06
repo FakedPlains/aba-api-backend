@@ -9,6 +9,7 @@ import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.*;
 import cloud.zfwproject.abaapi.service.model.enums.InterfaceInfoEnum;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceInfo;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceParam;
+import cloud.zfwproject.abaapi.service.model.po.User;
 import cloud.zfwproject.abaapi.service.model.vo.InterfaceInfoVO;
 import cloud.zfwproject.abaapi.service.model.vo.InterfaceInvokeVO;
 import cloud.zfwproject.abaapi.service.service.InterfaceInfoService;
@@ -22,6 +23,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.Method;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -58,7 +60,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
      * @return 接口分页列表
      */
     @Override
-    public Page<InterfaceInfo> getInterfaceInfoPages(@Validated InterfaceInfoQueryDTO interfaceInfoQueryDTO) {
+    public Page<InterfaceInfoVO> getInterfaceInfoPages(@Validated InterfaceInfoQueryDTO interfaceInfoQueryDTO) {
         InterfaceInfo interfaceInfoQuery = new InterfaceInfo();
         BeanUtils.copyProperties(interfaceInfoQueryDTO, interfaceInfoQuery);
         long current = interfaceInfoQueryDTO.getCurrent();
@@ -69,13 +71,27 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         String name = interfaceInfoQuery.getName();
         Integer status = interfaceInfoQuery.getStatus();
 
-        return this.lambdaQuery()
+        Page<InterfaceInfo> interfaceInfoPage = this.lambdaQuery()
                 .eq(!userService.isAdmin(), InterfaceInfo::getUserId, interfaceInfoQuery.getUserId())
                 .like(StringUtils.isNotBlank(name), InterfaceInfo::getName, name)
                 .like(StringUtils.isNotBlank(description), InterfaceInfo::getDescription, description)
                 .eq(status != null, InterfaceInfo::getStatus, status)
 //                .orderBy(StrUtil.isNotBlank(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC))
                 .page(new Page<>(current, size));
+
+        List<InterfaceInfoVO> interfaceInfoVOS = interfaceInfoPage.getRecords()
+                .stream().parallel()
+                .map(interfaceInfo -> {
+                    InterfaceInfoVO interfaceInfoVO = new InterfaceInfoVO();
+                    BeanUtil.copyProperties(interfaceInfo, interfaceInfoVO);
+                    User user = userService.getById(interfaceInfoVO.getUserId());
+                    interfaceInfoVO.setUserAccount(user.getUserAccount());
+                    return interfaceInfoVO;
+                })
+                .collect(Collectors.toList());
+        Page<InterfaceInfoVO> interfaceInfoVOPage = new PageDTO<>(interfaceInfoPage.getCurrent(), interfaceInfoPage.getSize(), interfaceInfoPage.getTotal());
+        interfaceInfoVOPage.setRecords(interfaceInfoVOS);
+        return interfaceInfoVOPage;
     }
 
     /**
@@ -208,6 +224,9 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         InterfaceInfoVO interfaceInfoVO = new InterfaceInfoVO();
         BeanUtil.copyProperties(interfaceInfo, interfaceInfoVO);
 
+        User user = userService.getById(interfaceInfoVO.getUserId());
+        interfaceInfoVO.setUserAccount(user.getUserAccount());
+
         // 2.获取接口参数信息
         List<InterfaceParam> interfaceParams = interfaceParamService.getInterfaceParamsByInterfaceId(id);
         Map<Integer, List<InterfaceParam>> paramsMap = interfaceParams.stream()
@@ -274,7 +293,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
      * @return 接口分页列表
      */
     @Override
-    public Page<InterfaceInfo> getShowingInterfaceInfo(InterfaceInfoQueryDTO interfaceInfoQueryDTO) {
+    public Page<InterfaceInfoVO> getShowingInterfaceInfo(InterfaceInfoQueryDTO interfaceInfoQueryDTO) {
         interfaceInfoQueryDTO.setStatus(InterfaceInfoEnum.Status.ONLINE.getValue());
         return this.getInterfaceInfoPages(interfaceInfoQueryDTO);
     }
