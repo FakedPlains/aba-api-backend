@@ -4,10 +4,12 @@ import cloud.zfwproject.abaapi.common.model.ResponseResult;
 import cloud.zfwproject.abaapi.common.util.ResponseUtils;
 import cloud.zfwproject.abaapi.service.model.dto.DeleteDTO;
 import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.InterfaceInfoAddRequest;
+import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.InterfaceInfoInvokeDTO;
 import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.InterfaceInfoQueryDTO;
 import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.InterfaceInfoUpdateDTO;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceInfo;
 import cloud.zfwproject.abaapi.service.model.vo.InterfaceInfoVO;
+import cloud.zfwproject.abaapi.service.model.vo.InterfaceInvokeVO;
 import cloud.zfwproject.abaapi.service.service.InterfaceInfoService;
 import cloud.zfwproject.abaapi.service.service.UserService;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -95,11 +97,30 @@ public class InterfaceInfoController {
     }
 
 
-    @GetMapping("/page")
+    /**
+     * 分页获取接口列表
+     *
+     * @param interfaceInfoQueryDTO 接口查询书籍
+     * @return 接口分页列表
+     */
+    @GetMapping("/show")
     public ResponseResult<Page<InterfaceInfo>> getInterfaceInfoPages(@Validated InterfaceInfoQueryDTO interfaceInfoQueryDTO) {
         Page<InterfaceInfo> page = interfaceInfoService.getInterfaceInfoPages(interfaceInfoQueryDTO);
         return ResponseUtils.success(page);
     }
+
+    /**
+     * 分页获取展示接口列表
+     *
+     * @param interfaceInfoQueryDTO 接口查询书籍
+     * @return 接口分页列表
+     */
+    @GetMapping("/page")
+    public ResponseResult<Page<InterfaceInfo>> getShowingInterfaceInfo(@Validated InterfaceInfoQueryDTO interfaceInfoQueryDTO) {
+        Page<InterfaceInfo> page = interfaceInfoService.getShowingInterfaceInfo(interfaceInfoQueryDTO);
+        return ResponseUtils.success(page);
+    }
+
 
     /**
      * 发布
@@ -128,33 +149,13 @@ public class InterfaceInfoController {
     /**
      * 测试调用
      *
-     * @param invokeRequest
-     * @return
+     * @param invokeRequest 调用请求
+     * @return 响应数据
      */
-    /*@PostMapping("/invoke")
-    public ResponseResult<String> invokeInterface(@RequestBody InterfaceInfoInvokeDTO invokeRequest) {
-        if (invokeRequest == null || invokeRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        long id = invokeRequest.getId();
-        String userRequestParams = invokeRequest.getUserRequestParams();
-        // 判断是否存在
-        InterfaceInfo interfaceInfo = interfaceInfoService.getById(id);
-        if (interfaceInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        }
-        if (interfaceInfo.getStatus() == InterfaceInfoEnum.OFFLINE.getValue()) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口已关闭");
-        }
-
-        User loginUser = userService.getLoginUser(request);
-        String accessKey = loginUser.getAccessKey();
-        String secretKey = loginUser.getSecretKey();
-        OpenApiClient tempClient = new OpenApiClient(accessKey, secretKey);
-        Gson gson = new Gson();
-        cloud.zfwproject.openapi.sdk.openapiclientsdk.model.User user = gson.fromJson(userRequestParams, cloud.zfwproject.openapi.sdk.openapiclientsdk.model.User.class);
-        String result = tempClient.getUsernameByPost(user);
-
+    @PostMapping("/invoke")
+    public ResponseResult<InterfaceInvokeVO> invokeInterface(@RequestBody @Validated InterfaceInfoInvokeDTO invokeRequest) {
+        InterfaceInvokeVO result = interfaceInfoService.invokeInterface(invokeRequest);
         return ResponseUtils.success(result);
-    }*/
+    }
+
 }

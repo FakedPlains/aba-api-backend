@@ -56,6 +56,7 @@ public interface UserService extends IService<User> {
 
     /**
      * 添加用户
+     *
      * @param userAddDTO 添加用户数据
      * @return 用户 id
      */
@@ -79,6 +80,7 @@ public interface UserService extends IService<User> {
 
     /**
      * 根据 accessKey 获取用户信息
+     *
      * @param accessKey accessKey
      * @return 用户信息
      */
@@ -86,6 +88,7 @@ public interface UserService extends IService<User> {
 
     /**
      * 根据用 id 获取 secretKey
+     *
      * @param id 用户 id
      * @return secretKey
      */
@@ -98,4 +101,11 @@ public interface UserService extends IService<User> {
      * @return 是否成功
      */
     Boolean updatePassword(UserUpdatePasswordRequest updatePasswordRequest);
+
+    /**
+     * 判断当前登录用户是否有管理员权限
+     *
+     * @return 是否有权限
+     */
+    Boolean isAdmin();
 }

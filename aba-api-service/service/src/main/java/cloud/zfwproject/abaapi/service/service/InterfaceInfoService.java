@@ -1,10 +1,12 @@
 package cloud.zfwproject.abaapi.service.service;
 
 import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.InterfaceInfoAddRequest;
+import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.InterfaceInfoInvokeDTO;
 import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.InterfaceInfoQueryDTO;
 import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.InterfaceInfoUpdateDTO;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceInfo;
 import cloud.zfwproject.abaapi.service.model.vo.InterfaceInfoVO;
+import cloud.zfwproject.abaapi.service.model.vo.InterfaceInvokeVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -17,6 +19,12 @@ import java.util.List;
  */
 public interface InterfaceInfoService extends IService<InterfaceInfo> {
 
+    /**
+     * 分页获取接口列表
+     *
+     * @param interfaceInfoQueryDTO 接口查询书籍
+     * @return 接口分页列表
+     */
     Page<InterfaceInfo> getInterfaceInfoPages(InterfaceInfoQueryDTO interfaceInfoQueryDTO);
 
     /**
@@ -27,12 +35,30 @@ public interface InterfaceInfoService extends IService<InterfaceInfo> {
      */
     Long addInterfaceInfo(InterfaceInfoAddRequest interfaceInfoAddDTO);
 
+    /**
+     * 删除
+     *
+     * @param id 接口 id
+     * @return 是否成功
+     */
     boolean deleteInterfaceInfo(Long id);
 
     boolean updateInterfaceInfo(InterfaceInfoUpdateDTO interfaceInfoUpdateDTO);
 
+    /**
+     * 根据 id 获取
+     *
+     * @param id 接口 id
+     * @return 接口信息
+     */
     InterfaceInfoVO getInterfaceInfoById(long id);
 
+    /**
+     * 获取列表（仅管理员可使用）
+     *
+     * @param interfaceInfoQueryDTO 接口查询数据
+     * @return 接口列表
+     */
     List<InterfaceInfo> listInterfaceInfo(InterfaceInfoQueryDTO interfaceInfoQueryDTO);
 
     /**
@@ -42,7 +68,35 @@ public interface InterfaceInfoService extends IService<InterfaceInfo> {
      */
     InterfaceInfo getInterfaceInfoByDataId(String dataId);
 
+    /**
+     * 发布
+     *
+     * @param id 接口 id
+     * @return 是否成功
+     */
     boolean onlineInterfaceInfo(Long id);
 
+    /**
+     * 下线
+     *
+     * @param id 接口 id
+     * @return 是否成功
+     */
     boolean offlineInterfaceInfo(Long id);
+
+    /**
+     * 分页获取展示接口列表
+     *
+     * @param interfaceInfoQueryDTO 接口查询书籍
+     * @return 接口分页列表
+     */
+    Page<InterfaceInfo> getShowingInterfaceInfo(InterfaceInfoQueryDTO interfaceInfoQueryDTO);
+
+    /**
+     * 测试调用
+     *
+     * @param invokeRequest 调用请求
+     * @return 响应数据
+     */
+    InterfaceInvokeVO invokeInterface(InterfaceInfoInvokeDTO invokeRequest);
 }

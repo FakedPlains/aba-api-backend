@@ -18,11 +18,6 @@ public interface CommonConstant {
     String SORT_ORDER_DESC = " descend";
 
     /**
-     * 是否升序
-     */
-    Boolean SORT_ORDER_IS_ASC = true;
-
-    /**
      * 用户名前缀
      */
     String USER_NAME_PREFIX = "demo_";

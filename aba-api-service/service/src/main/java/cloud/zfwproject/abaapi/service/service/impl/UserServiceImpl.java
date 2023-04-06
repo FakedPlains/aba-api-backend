@@ -8,6 +8,7 @@ import cloud.zfwproject.abaapi.common.util.UserHolder;
 import cloud.zfwproject.abaapi.service.mapper.UserMapper;
 import cloud.zfwproject.abaapi.service.model.dto.DeleteDTO;
 import cloud.zfwproject.abaapi.service.model.dto.user.*;
+import cloud.zfwproject.abaapi.service.model.enums.UserEnum;
 import cloud.zfwproject.abaapi.service.model.po.User;
 import cloud.zfwproject.abaapi.service.model.vo.UserVO;
 import cloud.zfwproject.abaapi.service.service.UserService;
@@ -162,7 +163,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User userQuery = new User();
         BeanUtil.copyProperties(userQueryDTO, userQuery);
         Page<User> userPage = this.lambdaQuery()
-                .setEntity(userQuery)
+                .like(StrUtil.isNotBlank(userQuery.getUserName()), User::getUserName, userQuery.getUserName())
+                .like(StrUtil.isNotBlank(userQuery.getUserAccount()), User::getUserAccount, userQuery.getUserAccount())
+                .eq(StrUtil.isNotBlank(userQuery.getUserRole()), User::getUserRole, userQuery.getUserRole())
                 .page(new Page<>(userQueryDTO.getCurrent(), userQueryDTO.getPageSize()));
         List<UserVO> userVOS = userPage.getRecords().stream()
                 .map(user -> {
@@ -284,6 +287,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
 
         return true;
+    }
+
+    /**
+     * 判断当前登录用户是否有管理员权限
+     *
+     * @return 是否有权限
+     */
+    @Override
+    public Boolean isAdmin() {
+        SimpleUser user = UserHolder.getUser();
+        return UserEnum.Role.ADMIN.getText().equals(user.getUserRole());
     }
 
 }

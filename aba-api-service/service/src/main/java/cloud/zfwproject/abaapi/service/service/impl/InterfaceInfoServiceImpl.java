@@ -1,8 +1,8 @@
 package cloud.zfwproject.abaapi.service.service.impl;
 
-import cloud.zfwproject.abaapi.common.constant.CommonConstant;
 import cloud.zfwproject.abaapi.common.exception.BusinessException;
 import cloud.zfwproject.abaapi.common.model.ResponseCode;
+import cloud.zfwproject.abaapi.common.model.SimpleUser;
 import cloud.zfwproject.abaapi.common.util.UserHolder;
 import cloud.zfwproject.abaapi.service.mapper.InterfaceInfoMapper;
 import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.*;
@@ -10,13 +10,17 @@ import cloud.zfwproject.abaapi.service.model.enums.InterfaceInfoEnum;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceInfo;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceParam;
 import cloud.zfwproject.abaapi.service.model.vo.InterfaceInfoVO;
+import cloud.zfwproject.abaapi.service.model.vo.InterfaceInvokeVO;
 import cloud.zfwproject.abaapi.service.service.InterfaceInfoService;
 import cloud.zfwproject.abaapi.service.service.InterfaceParamService;
+import cloud.zfwproject.abaapi.service.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.Method;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +32,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -41,24 +46,36 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         implements InterfaceInfoService {
 
     @Resource
+    private UserService userService;
+
+    @Resource
     private InterfaceParamService interfaceParamService;
 
+    /**
+     * 分页获取接口列表
+     *
+     * @param interfaceInfoQueryDTO 接口查询书籍
+     * @return 接口分页列表
+     */
     @Override
     public Page<InterfaceInfo> getInterfaceInfoPages(@Validated InterfaceInfoQueryDTO interfaceInfoQueryDTO) {
         InterfaceInfo interfaceInfoQuery = new InterfaceInfo();
         BeanUtils.copyProperties(interfaceInfoQueryDTO, interfaceInfoQuery);
         long current = interfaceInfoQueryDTO.getCurrent();
         long size = interfaceInfoQueryDTO.getPageSize();
-        String sortField = interfaceInfoQueryDTO.getSortField();
-        String sortOrder = interfaceInfoQueryDTO.getSortOrder();
+//        String sortField = interfaceInfoQueryDTO.getSortField();
+//        String sortOrder = interfaceInfoQueryDTO.getSortOrder();
         String description = interfaceInfoQuery.getDescription();
-        // content 需支持模糊搜索
-        interfaceInfoQuery.setDescription(null);
-        QueryWrapper<InterfaceInfo> queryWrapper = new QueryWrapper<>(interfaceInfoQuery);
-        queryWrapper.like(StringUtils.isNotBlank(description), "content", description);
-        queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
-                sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
-        return this.page(new Page<>(current, size), queryWrapper);
+        String name = interfaceInfoQuery.getName();
+        Integer status = interfaceInfoQuery.getStatus();
+
+        return this.lambdaQuery()
+                .eq(!userService.isAdmin(), InterfaceInfo::getUserId, interfaceInfoQuery.getUserId())
+                .like(StringUtils.isNotBlank(name), InterfaceInfo::getName, name)
+                .like(StringUtils.isNotBlank(description), InterfaceInfo::getDescription, description)
+                .eq(status != null, InterfaceInfo::getStatus, status)
+//                .orderBy(StrUtil.isNotBlank(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC))
+                .page(new Page<>(current, size));
     }
 
     /**
@@ -128,20 +145,32 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         return interfaceInfoId;
     }
 
+    /**
+     * 删除
+     *
+     * @param id 接口 id
+     * @return 是否成功
+     */
     @Override
     public boolean deleteInterfaceInfo(Long id) {
-//        User user = userService.getLoginUser(request);
-//        long id = deleteRequest.getId();
+        SimpleUser user = UserHolder.getUser();
+        Long userId = user.getId();
         // 判断是否存在
         InterfaceInfo oldInterfaceInfo = this.getById(id);
         if (oldInterfaceInfo == null) {
             throw new BusinessException(ResponseCode.NOT_FOUND_ERROR);
         }
-        // TODO 仅本人或管理员可删除
-//        if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
-//            throw new BusinessException(ResponseCode.PERMISSION_DENIED);
-//        }
-        return this.removeById(id);
+        // 仅本人或管理员可删除
+        if (!oldInterfaceInfo.getUserId().equals(userId) && !userService.isAdmin()) {
+            throw new BusinessException(ResponseCode.PERMISSION_DENIED);
+        }
+        boolean res = this.removeById(id);
+        if (!res) {
+            throw new BusinessException(ResponseCode.OPERATION_ERROR, "删除失败");
+        }
+        // TODO 异步删除接口相关信息
+
+        return false;
     }
 
     @Override
@@ -163,6 +192,12 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         return this.updateById(interfaceInfo);
     }
 
+    /**
+     * 根据 id 获取
+     *
+     * @param id 接口 id
+     * @return 接口信息
+     */
     @Override
     public InterfaceInfoVO getInterfaceInfoById(long id) {
         if (id <= 0) {
@@ -209,14 +244,98 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
                 .one();
     }
 
+    /**
+     * 发布
+     *
+     * @param id 接口 id
+     * @return 是否成功
+     */
     @Override
     public boolean onlineInterfaceInfo(Long id) {
+        // TODO 修改逻辑 -> 需要进行审核
         return updateInterfaceInfoStatus(id, InterfaceInfoEnum.Status.ONLINE.getValue());
     }
 
+    /**
+     * 下线
+     *
+     * @param id 接口 id
+     * @return 是否成功
+     */
     @Override
     public boolean offlineInterfaceInfo(Long id) {
         return updateInterfaceInfoStatus(id, InterfaceInfoEnum.Status.OFFLINE.getValue());
+    }
+
+    /**
+     * 分页获取展示接口列表
+     *
+     * @param interfaceInfoQueryDTO 接口查询书籍
+     * @return 接口分页列表
+     */
+    @Override
+    public Page<InterfaceInfo> getShowingInterfaceInfo(InterfaceInfoQueryDTO interfaceInfoQueryDTO) {
+        interfaceInfoQueryDTO.setStatus(InterfaceInfoEnum.Status.ONLINE.getValue());
+        return this.getInterfaceInfoPages(interfaceInfoQueryDTO);
+    }
+
+    /**
+     * 测试调用
+     *
+     * @param invokeRequest 调用请求
+     * @return 响应数据
+     */
+    @Override
+    public InterfaceInvokeVO invokeInterface(InterfaceInfoInvokeDTO invokeRequest) {
+        long id = invokeRequest.getId();
+        // 判断是否存在
+        InterfaceInfo interfaceInfo = this.getById(id);
+        if (interfaceInfo == null) {
+            throw new BusinessException(ResponseCode.NOT_FOUND_ERROR);
+        }
+        // 判断接口状态
+        if (interfaceInfo.getStatus() == InterfaceInfoEnum.Status.OFFLINE.getValue()) {
+            throw new BusinessException(ResponseCode.INVALID_PARAMS, "接口已关闭");
+        }
+
+        // TODO 使用 client 调用
+        SimpleUser user = UserHolder.getUser();
+        String accessKey = user.getAccessKey();
+
+        String url = interfaceInfo.getUrl();
+        Integer method = interfaceInfo.getMethod();
+
+        Map<String, String> pathParams = invokeRequest.getPathParams();
+        Map<String, String> headerParams = invokeRequest.getHeaderParams();
+        Map<String, Object> queryParams = invokeRequest.getQueryParams();
+        String bodyParams = invokeRequest.getBodyParams();
+
+        for (String key : pathParams.keySet()) {
+            url = url.replace("{" + key + "}", pathParams.get(key));
+        }
+
+        HttpRequest request = HttpRequest.of(url).method(getMethod(method));
+        if (CollUtil.isNotEmpty(headerParams)) {
+            request.addHeaders(headerParams);
+        }
+        if (CollUtil.isNotEmpty(queryParams)) {
+            request.form(queryParams);
+        }
+        if (StrUtil.isNotBlank(bodyParams)) {
+            request.body(bodyParams);
+        }
+        try (HttpResponse response = request.execute()) {
+            String body = response.body();
+            Map<String, List<String>> headers = response.headers();
+            headers = headers.keySet().stream()
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toMap(k -> k, headers::get));
+
+            InterfaceInvokeVO interfaceInvokeVO = new InterfaceInvokeVO();
+            interfaceInvokeVO.setResponseBody(body);
+            interfaceInvokeVO.setResponseHeaders(headers);
+            return interfaceInvokeVO;
+        }
     }
 
     private boolean updateInterfaceInfoStatus(Long id, Integer status) {
@@ -233,6 +352,20 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         interfaceInfo.setId(id);
         interfaceInfo.setStatus(status);
         return this.updateById(interfaceInfo);
+    }
+
+    private Method getMethod(Integer value) {
+        switch (value) {
+            case 0:
+                return Method.GET;
+            case 1:
+                return Method.POST;
+            case 2:
+                return Method.PUT;
+            case 3:
+                return Method.DELETE;
+        }
+        return null;
     }
 
 }

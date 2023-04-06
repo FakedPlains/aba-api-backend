@@ -38,7 +38,7 @@ public class InterfaceInfoQueryDTO extends PageParam {
     /**
      * 请求类型
      */
-    private String method;
+    private Integer method;
 
 
     /**

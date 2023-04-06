@@ -38,5 +38,4 @@ public class PageParam {
      */
     private String sortOrder = CommonConstant.SORT_ORDER_ASC;
 
-    private Boolean sortOrderIsAsc= CommonConstant.SORT_ORDER_IS_ASC;
 }
