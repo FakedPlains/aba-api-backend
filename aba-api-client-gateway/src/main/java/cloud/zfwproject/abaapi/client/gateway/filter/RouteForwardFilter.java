@@ -1,11 +1,9 @@
 package cloud.zfwproject.abaapi.client.gateway.filter;
 
+import cloud.zfwproject.abaapi.client.gateway.service.InterfaceInfoService;
 import cloud.zfwproject.abaapi.common.model.ResponseCode;
 import cloud.zfwproject.abaapi.common.util.ResponseUtils;
-import cloud.zfwproject.abaapi.service.model.po.InterfaceInfo;
-import cloud.zfwproject.abaapi.service.remote.DubboInterfaceInfoService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.Route;
@@ -20,6 +18,7 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.Resource;
 import java.net.URI;
 
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR;
@@ -34,20 +33,26 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 @Component
 public class RouteForwardFilter implements GlobalFilter, Ordered {
 
-    @DubboReference
-    private DubboInterfaceInfoService interfaceInfoService;
+    @Resource
+    private InterfaceInfoService interfaceInfoService;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse res = exchange.getResponse();
         HttpHeaders headers = request.getHeaders();
+        String accessKey = headers.getFirst("accessKey");
         String dataId = headers.getFirst("dataId");
 
-        // TODO 4.请求模拟接口是否存在
-        InterfaceInfo interfaceInfo = interfaceInfoService.getInterfaceUrlByDataId(dataId);
-        if (interfaceInfo == null) {
+        // 4.请求模拟接口是否存在
+        String url = interfaceInfoService.getInterfaceUrlByDataId(dataId);
+        if (url == null) {
             return ResponseUtils.outFailed(res, ResponseUtils.fail(ResponseCode.INVALID_PARAMS, "接口不存在"));
+        }
+        // 调用次数 + 1
+        boolean canInvoke = interfaceInfoService.invokeInterface(accessKey, dataId);
+        if (!canInvoke) {
+            return ResponseUtils.outFailed(res, ResponseUtils.fail(ResponseCode.OPERATION_ERROR, "调用次数不足"));
         }
 
         // 5.请求转发，调用接口
@@ -56,7 +61,7 @@ public class RouteForwardFilter implements GlobalFilter, Ordered {
         HttpMethod method = request.getMethod();
         //请求参数
         MultiValueMap<String, String> queryParams = request.getQueryParams();
-        URI uri = UriComponentsBuilder.fromHttpUrl(interfaceInfo.getUrl()).queryParams(queryParams).build().toUri();
+        URI uri = UriComponentsBuilder.fromHttpUrl(url).queryParams(queryParams).build().toUri();
         //替换新的url地址
         ServerHttpRequest serverHttpRequest = request.mutate()
                 .uri(uri)

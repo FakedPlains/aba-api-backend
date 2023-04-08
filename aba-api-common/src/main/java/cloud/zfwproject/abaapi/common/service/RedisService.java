@@ -31,6 +31,32 @@ public interface RedisService {
     <T> T getFromString(String key, Class<T> clazz);
 
     /**
+     * 存储 hash 类型
+     *
+     * @param key     redis 键
+     * @param hashKey hash 键
+     * @param value   hash 值
+     */
+    void setWithHash(String key, String hashKey, Object value);
+
+    /**
+     * 获取 hash 中指定 key 的数据
+     *
+     * @param key
+     * @param hashKey
+     * @return
+     */
+    String getFromHashKey(String key, String hashKey);
+
+    /**
+     * 删除 hash 中指定 key 的数据
+     * @param key
+     * @param hashKeys
+     * @return
+     */
+    boolean deleteHashKey(String key, Object... hashKeys);
+
+    /**
      * 设置过期时间
      *
      * @param key

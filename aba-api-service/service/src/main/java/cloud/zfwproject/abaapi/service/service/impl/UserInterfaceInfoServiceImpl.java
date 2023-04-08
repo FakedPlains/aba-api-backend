@@ -120,6 +120,32 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
 
         return this.page(new Page<>(current, size), queryWrapper);
     }
+
+    @Override
+    public void incrementInvokeCount(Long userId, Long interfaceInfoId, Integer count) {
+        boolean res = this.lambdaUpdate()
+                .eq(UserInterfaceInfo::getUserId, userId)
+                .eq(UserInterfaceInfo::getInterfaceInfoId, interfaceInfoId)
+                .setSql("total_num = total_num + 1")
+                .setSql("left_num = left_num - 1")
+                .update();
+        if (!res) {
+            throw new BusinessException(ResponseCode.OPERATION_ERROR);
+        }
+    }
+
+    @Override
+    public int getInvokeLeftCount(Long userId, Long interfaceInfoId) {
+        UserInterfaceInfo userInterfaceInfo = this.lambdaQuery()
+                .eq(UserInterfaceInfo::getUserId, userId)
+                .eq(UserInterfaceInfo::getInterfaceInfoId, interfaceInfoId)
+                .select(UserInterfaceInfo::getLeftNum)
+                .one();
+        if (userInterfaceInfo == null) {
+            throw new BusinessException(ResponseCode.NOT_FOUND_ERROR);
+        }
+        return userInterfaceInfo.getLeftNum();
+    }
 }
 
 

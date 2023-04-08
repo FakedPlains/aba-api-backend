@@ -1,8 +1,10 @@
 package cloud.zfwproject.abaapi.service.service.impl;
 
+import cloud.zfwproject.abaapi.common.constant.RedisConstants;
 import cloud.zfwproject.abaapi.common.exception.BusinessException;
 import cloud.zfwproject.abaapi.common.model.ResponseCode;
 import cloud.zfwproject.abaapi.common.model.SimpleUser;
+import cloud.zfwproject.abaapi.common.service.RedisService;
 import cloud.zfwproject.abaapi.common.util.UserHolder;
 import cloud.zfwproject.abaapi.service.mapper.InterfaceInfoMapper;
 import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.*;
@@ -46,6 +48,9 @@ import java.util.stream.Collectors;
 @Service("interfaceInfoService")
 public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfo>
         implements InterfaceInfoService {
+
+    @Resource
+    private RedisService redisService;
 
     @Resource
     private UserService userService;
@@ -185,6 +190,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
             throw new BusinessException(ResponseCode.OPERATION_ERROR, "删除失败");
         }
         // TODO 异步删除接口相关信息
+        interfaceParamService.deleteInterfaceParamsByInterfaceId(id);
 
         return false;
     }
@@ -259,7 +265,6 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
     public InterfaceInfo getInterfaceInfoByDataId(String dataId) {
         return this.lambdaQuery()
                 .eq(StrUtil.isNotBlank(dataId), InterfaceInfo::getDataId, dataId)
-                .select(InterfaceInfo::getUrl)
                 .one();
     }
 
@@ -272,7 +277,21 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
     @Override
     public boolean onlineInterfaceInfo(Long id) {
         // TODO 修改逻辑 -> 需要进行审核
-        return updateInterfaceInfoStatus(id, InterfaceInfoEnum.Status.ONLINE.getValue());
+        // 1.判断是否存在
+        InterfaceInfo interfaceInfo = this.getById(id);
+        if (interfaceInfo == null) {
+            throw new BusinessException(ResponseCode.NOT_FOUND_ERROR);
+        }
+        // 2.审核接口是否可用
+
+        // 3.更新接口状态
+        boolean res = updateInterfaceInfoStatus(id, InterfaceInfoEnum.Status.ONLINE.getValue());
+        if (!res) {
+            throw new BusinessException(ResponseCode.OPERATION_ERROR, "发布失败");
+        }
+        // 4.存储到 redis
+        redisService.setWithHash(RedisConstants.INTERFACE_INFO_PREFIX, interfaceInfo.getDataId(), interfaceInfo.getUrl());
+        return true;
     }
 
     /**
@@ -283,7 +302,19 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
      */
     @Override
     public boolean offlineInterfaceInfo(Long id) {
-        return updateInterfaceInfoStatus(id, InterfaceInfoEnum.Status.OFFLINE.getValue());
+        // 1.判断是否存在
+        InterfaceInfo interfaceInfo = this.getById(id);
+        if (interfaceInfo == null) {
+            throw new BusinessException(ResponseCode.NOT_FOUND_ERROR);
+        }
+        // 2.修改状态
+        boolean res = updateInterfaceInfoStatus(id, InterfaceInfoEnum.Status.OFFLINE.getValue());
+        if (!res) {
+            throw new BusinessException(ResponseCode.OPERATION_ERROR, "下线失败");
+        }
+        // 3.删除 redis 数据
+        redisService.deleteHashKey(RedisConstants.INTERFACE_INFO_PREFIX, interfaceInfo.getDataId());
+        return true;
     }
 
     /**
@@ -358,15 +389,6 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
     }
 
     private boolean updateInterfaceInfoStatus(Long id, Integer status) {
-        if (id <= 0) {
-            throw new BusinessException(ResponseCode.INVALID_PARAMS);
-        }
-        // 判断是否存在
-        InterfaceInfo oldInterfaceInfo = this.getById(id);
-        if (oldInterfaceInfo == null) {
-            throw new BusinessException(ResponseCode.NOT_FOUND_ERROR);
-        }
-
         InterfaceInfo interfaceInfo = new InterfaceInfo();
         interfaceInfo.setId(id);
         interfaceInfo.setStatus(status);

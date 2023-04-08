@@ -11,16 +11,39 @@ import static cloud.zfwproject.abaapi.common.constant.CommonConstant.REDIS_KEY_P
  */
 public interface RedisConstants {
 
-    public static final String ICR_ID_KEY_PREFIX = REDIS_KEY_PREFIX + "icr:";
+    /**
+     * 自增 id 计数
+     */
+    String ICR_ID_KEY_PREFIX = REDIS_KEY_PREFIX + "icr:";
 
-    public static final String USER_LOGIN_KEY_PREFIX = REDIS_KEY_PREFIX + "user:login:token:";
+    /**
+     * 用户登录信息
+     */
+    String USER_LOGIN_KEY_PREFIX = REDIS_KEY_PREFIX + "user:login:token:";
 
-    public static final String USER_REGISTER_CODE_PREFIX = REDIS_KEY_PREFIX + "user:register:code:";
+    /**
+     * 用户注册验证码
+     */
+    String USER_REGISTER_CODE_PREFIX = REDIS_KEY_PREFIX + "user:register:code:";
 
-    public static final String API_ACCESS_LIMIT_PREFIX = REDIS_KEY_PREFIX + "access:limit:";
+    /**
+     * 接口信息
+     */
+    String INTERFACE_INFO_PREFIX = REDIS_KEY_PREFIX + "interface:info";
 
-    public static final Long LOGIN_USER_TTL = 30L;
+    /**
+     * 接口限流
+     */
+    String API_ACCESS_LIMIT_PREFIX = REDIS_KEY_PREFIX + "access:limit:";
 
-    public static final Long REGISTER_CODE_TTL = 10L;
+    /**
+     * 用户登录过期时间
+     */
+    Long LOGIN_USER_TTL = 30L;
+
+    /**
+     * 用户注册验证码过期时间
+     */
+    Long REGISTER_CODE_TTL = 10L;
 
 }

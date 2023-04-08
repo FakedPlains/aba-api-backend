@@ -5,7 +5,6 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -16,7 +15,7 @@ import reactor.core.publisher.Mono;
  * @date 2023/4/2 20:28
  */
 @Slf4j
-@Component
+//@Component
 public class LogFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -28,9 +27,7 @@ public class LogFilter implements GlobalFilter, Ordered {
         log.info("请求参数: {}", request.getQueryParams());
         String sourceAddress = request.getLocalAddress().getHostString();
         log.info("请求来源: {}", sourceAddress);
-        return chain.filter(exchange).then(Mono.fromRunnable(() -> {
-            log.info("结束。。。");
-        }));
+        return chain.filter(exchange);
     }
 
     @Override

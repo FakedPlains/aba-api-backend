@@ -64,7 +64,7 @@ public interface InterfaceInfoService extends IService<InterfaceInfo> {
     /**
      * 根据 dataId 获取接口信息
      * @param dataId md5(method:url)
-     * @return 接口 url
+     * @return 接口信息
      */
     InterfaceInfo getInterfaceInfoByDataId(String dataId);
 

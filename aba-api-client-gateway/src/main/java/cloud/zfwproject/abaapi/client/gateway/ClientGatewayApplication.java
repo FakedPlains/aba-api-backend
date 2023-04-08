@@ -12,7 +12,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
  * @date 2023/3/9 21:41
  */
 @EnableDubbo
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@SpringBootApplication(
+        exclude = {DataSourceAutoConfiguration.class},
+        scanBasePackages = {"cloud.zfwproject.abaapi.client.gateway", "cloud.zfwproject.abaapi.common"}
+)
 public class ClientGatewayApplication {
     public static void main(String[] args) {
         SpringApplication.run(ClientGatewayApplication.class, args);

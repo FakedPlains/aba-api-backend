@@ -39,6 +39,26 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public void setWithHash(String key, String hashKey, Object value) {
+        stringRedisTemplate.opsForHash().put(key, hashKey, value);
+    }
+
+    @Override
+    public String getFromHashKey(String key, String hashKey) {
+        Object o = stringRedisTemplate.opsForHash().get(key, hashKey);
+        if (o == null) {
+            return null;
+        }
+        return o.toString();
+    }
+
+    @Override
+    public boolean deleteHashKey(String key, Object... hashKeys) {
+        Long res = stringRedisTemplate.opsForHash().delete(key, hashKeys);
+        return res >= hashKeys.length;
+    }
+
+    @Override
     public void expire(String key, long timeout, TimeUnit timeUnit) {
         stringRedisTemplate.expire(key, timeout, timeUnit);
     }

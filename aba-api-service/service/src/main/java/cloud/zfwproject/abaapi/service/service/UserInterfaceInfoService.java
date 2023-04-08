@@ -10,10 +10,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
-* @author 46029
-* @description 针对表【user_interface_info(用户接口关系表)】的数据库操作Service
-* @createDate 2023-03-12 21:18:58
-*/
+ * @author 46029
+ * @description 针对表【user_interface_info(用户接口关系表)】的数据库操作Service
+ * @createDate 2023-03-12 21:18:58
+ */
 public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
 
     long addUserInterfaceInfo(UserInterfaceInfoAddDTO userInterfaceInfoAddDTO);
@@ -27,4 +27,22 @@ public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
     List<UserInterfaceInfo> listUserInterfaceInfo(UserInterfaceInfoQueryDTO userInterfaceInfoQueryDTO);
 
     Page<UserInterfaceInfo> listUserInterfaceInfoByPage(UserInterfaceInfoQueryDTO userInterfaceInfoQueryDTO);
+
+    /**
+     * 增加接口调用次数
+     *
+     * @param userId
+     * @param interfaceInfoId
+     * @param count
+     */
+    void incrementInvokeCount(Long userId, Long interfaceInfoId, Integer count);
+
+    /**
+     * 获取接口剩余调用次数
+     *
+     * @param userId
+     * @param interfaceInfoId
+     * @return
+     */
+    int getInvokeLeftCount(Long userId, Long interfaceInfoId);
 }

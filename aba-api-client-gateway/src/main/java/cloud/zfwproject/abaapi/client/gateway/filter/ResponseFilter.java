@@ -16,10 +16,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author 46029
  * @version 1.0
@@ -41,25 +37,26 @@ public class ResponseFilter implements GlobalFilter, Ordered {
                 ServerHttpResponseDecorator decoratedResponse = new ServerHttpResponseDecorator(originalResponse) {
                     @Override
                     public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
-                        log.info("body instanceof Flux: {}", (body instanceof Flux));
+//                        log.info("body instanceof Flux: {}", (body instanceof Flux));
                         if (body instanceof Flux) {
                             Flux<? extends DataBuffer> fluxBody = Flux.from(body);
                             //
                             return super.writeWith(fluxBody.map(dataBuffer -> {
                                 // TODO 7.请求次数 +1
+
                                 // 6.记录响应日志
                                 byte[] content = new byte[dataBuffer.readableByteCount()];
                                 dataBuffer.read(content);
-                                DataBufferUtils.release(dataBuffer);//释放掉内存
+                                DataBufferUtils.release(dataBuffer); //释放掉内存
                                 // 构建日志
-                                StringBuilder sb2 = new StringBuilder(200);
+                                /*StringBuilder sb2 = new StringBuilder(200);
                                 sb2.append("<--- {} {} \n");
                                 List<Object> rspArgs = new ArrayList<>();
                                 rspArgs.add(originalResponse.getStatusCode());
-                                //rspArgs.add(requestUrl);
+                                rspArgs.add(requestUrl);
                                 String data = new String(content, StandardCharsets.UTF_8); // data
                                 sb2.append(data);
-                                log.info(sb2.toString(), rspArgs.toArray()); // log.info("<-- {} {}\n", originalResponse.getStatusCode(), data);
+                                log.info(sb2.toString(), rspArgs.toArray());*/ // log.info("<-- {} {}\n", originalResponse.getStatusCode(), data);
                                 return bufferFactory.wrap(content);
                             }));
                         } else {

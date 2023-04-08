@@ -25,7 +25,7 @@ public interface CommonConstant {
     /**
      * Redis key 前缀
      */
-    String REDIS_KEY_PREFIX = "demo:";
+    String REDIS_KEY_PREFIX = "abapi:";
 
     /**
      * 请求头 Token 标识
