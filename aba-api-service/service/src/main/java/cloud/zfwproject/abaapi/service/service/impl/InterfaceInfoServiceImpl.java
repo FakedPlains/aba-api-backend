@@ -37,6 +37,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +49,9 @@ import java.util.stream.Collectors;
 @Service("interfaceInfoService")
 public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfo>
         implements InterfaceInfoService {
+
+    @Resource
+    private ExecutorService asyncTaskExecutor;
 
     @Resource
     private RedisService redisService;
@@ -170,19 +174,18 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
      * 删除
      *
      * @param id 接口 id
-     * @return 是否成功
      */
     @Override
-    public boolean deleteInterfaceInfo(Long id) {
+    public void deleteInterfaceInfo(Long id) {
         SimpleUser user = UserHolder.getUser();
         Long userId = user.getId();
         // 判断是否存在
-        InterfaceInfo oldInterfaceInfo = this.getById(id);
-        if (oldInterfaceInfo == null) {
+        InterfaceInfo interfaceInfo = this.getById(id);
+        if (interfaceInfo == null) {
             throw new BusinessException(ResponseCode.NOT_FOUND_ERROR);
         }
         // 仅本人或管理员可删除
-        if (!oldInterfaceInfo.getUserId().equals(userId) && !userService.isAdmin()) {
+        if (!interfaceInfo.getUserId().equals(userId) && !userService.isAdmin()) {
             throw new BusinessException(ResponseCode.PERMISSION_DENIED);
         }
         boolean res = this.removeById(id);
@@ -190,9 +193,12 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
             throw new BusinessException(ResponseCode.OPERATION_ERROR, "删除失败");
         }
         // TODO 异步删除接口相关信息
-        interfaceParamService.deleteInterfaceParamsByInterfaceId(id);
+        asyncTaskExecutor.submit(() ->
+                interfaceParamService.deleteInterfaceParamsByInterfaceId(id)
+        );
 
-        return false;
+        // 3.删除 redis 数据
+        redisService.deleteHashKey(RedisConstants.INTERFACE_INFO_PREFIX, interfaceInfo.getDataId());
     }
 
     @Override

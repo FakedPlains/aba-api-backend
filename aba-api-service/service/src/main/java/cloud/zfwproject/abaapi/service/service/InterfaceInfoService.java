@@ -39,9 +39,8 @@ public interface InterfaceInfoService extends IService<InterfaceInfo> {
      * 删除
      *
      * @param id 接口 id
-     * @return 是否成功
      */
-    boolean deleteInterfaceInfo(Long id);
+    void deleteInterfaceInfo(Long id);
 
     boolean updateInterfaceInfo(InterfaceInfoUpdateDTO interfaceInfoUpdateDTO);
 

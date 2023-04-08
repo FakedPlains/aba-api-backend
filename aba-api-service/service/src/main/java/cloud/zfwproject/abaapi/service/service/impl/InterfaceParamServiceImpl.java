@@ -1,12 +1,13 @@
 package cloud.zfwproject.abaapi.service.service.impl;
 
 
+import cloud.zfwproject.abaapi.common.exception.BusinessException;
+import cloud.zfwproject.abaapi.common.model.ResponseCode;
 import cloud.zfwproject.abaapi.service.mapper.InterfaceRequestParamsMapper;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceParam;
 import cloud.zfwproject.abaapi.service.service.InterfaceParamService;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,12 +33,14 @@ public class InterfaceParamServiceImpl extends ServiceImpl<InterfaceRequestParam
      *
      * @param interfaceId 接口 id
      */
-    @Async
     @Override
     public void deleteInterfaceParamsByInterfaceId(Long interfaceId) {
         LambdaQueryChainWrapper<InterfaceParam> wrapper = this.lambdaQuery()
                 .eq(InterfaceParam::getInterfaceInfoId, interfaceId);
-        this.remove(wrapper);
+        boolean res = this.remove(wrapper);
+        if (!res) {
+            throw new BusinessException(ResponseCode.OPERATION_ERROR);
+        }
     }
 }
 

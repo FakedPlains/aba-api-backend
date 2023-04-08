@@ -1,9 +1,6 @@
 package cloud.zfwproject.abaapi.client.gateway.filter;
 
 import cloud.zfwproject.abaapi.client.gateway.service.InterfaceInfoService;
-import cloud.zfwproject.abaapi.common.model.ResponseCode;
-import cloud.zfwproject.abaapi.common.util.ResponseUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.Route;
@@ -11,7 +8,6 @@ import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
@@ -29,7 +25,6 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
  * @description TODO
  * @date 2023/4/2 17:31
  */
-@Slf4j
 @Component
 public class RouteForwardFilter implements GlobalFilter, Ordered {
 
@@ -39,21 +34,10 @@ public class RouteForwardFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
-        ServerHttpResponse res = exchange.getResponse();
         HttpHeaders headers = request.getHeaders();
-        String accessKey = headers.getFirst("accessKey");
         String dataId = headers.getFirst("dataId");
 
-        // 4.请求模拟接口是否存在
         String url = interfaceInfoService.getInterfaceUrlByDataId(dataId);
-        if (url == null) {
-            return ResponseUtils.outFailed(res, ResponseUtils.fail(ResponseCode.INVALID_PARAMS, "接口不存在"));
-        }
-        // 调用次数 + 1
-        boolean canInvoke = interfaceInfoService.invokeInterface(accessKey, dataId);
-        if (!canInvoke) {
-            return ResponseUtils.outFailed(res, ResponseUtils.fail(ResponseCode.OPERATION_ERROR, "调用次数不足"));
-        }
 
         // 5.请求转发，调用接口
         String rawPath = request.getURI().getRawPath();
@@ -83,6 +67,6 @@ public class RouteForwardFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return 2;
+        return 3;
     }
 }

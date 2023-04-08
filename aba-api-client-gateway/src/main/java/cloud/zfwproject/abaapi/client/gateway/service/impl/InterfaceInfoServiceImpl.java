@@ -30,12 +30,12 @@ public class InterfaceInfoServiceImpl implements InterfaceInfoService {
     }
 
     @Override
-    public synchronized boolean invokeInterface(String accessKey, String dataId) {
+    public boolean invokeInterface(String accessKey, String dataId) {
         int leftCount = userInterfaceInfoService.getInvokeLeftCount(accessKey, dataId);
         if (leftCount <= 0) {
             return false;
         }
-        userInterfaceInfoService.incrementInvokeCount(accessKey, dataId, 1);
+        userInterfaceInfoService.modifyInvokeCount(accessKey, dataId);
         return true;
     }
 }

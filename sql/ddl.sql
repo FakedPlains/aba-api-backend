@@ -108,12 +108,14 @@ create table `user_interface_order`
 drop table if exists `invoke_history`;
 create table `invoke_history`
 (
-    `id`            bigint auto_increment comment 'id' primary key,
-    `invoke_time`   timestamp                          not null comment '调用时间',
-    `invoke_status` tinyint  default 0                 not null comment '调用状态',
-    `create_time`   datetime default CURRENT_TIMESTAMP not null comment '创建时间',
-    `update_time`   datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
-    `is_delete`     tinyint  default 0                 not null comment '是否删除'
+    `id`                bigint auto_increment comment 'id' primary key,
+    `user_id`           bigint                             not null comment '用户 id',
+    `interface_info_id` bigint                             not null comment '接口 id',
+    `invoke_time`       timestamp                          not null comment '调用时间',
+    `invoke_status`     tinyint  default 0                 not null comment '调用状态',
+    `create_time`       datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    `update_time`       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    `is_delete`         tinyint  default 0                 not null comment '是否删除'
 ) comment '调用历史记录表';
 
 drop table if exists `dict_type`;

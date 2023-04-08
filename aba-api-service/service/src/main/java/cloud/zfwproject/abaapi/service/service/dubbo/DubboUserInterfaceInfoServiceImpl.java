@@ -40,9 +40,9 @@ public class DubboUserInterfaceInfoServiceImpl implements DubboUserInterfaceInfo
     }
 
     @Override
-    public void incrementInvokeCount(String accessKey, String dataId, Integer count) {
+    public void modifyInvokeCount(String accessKey, String dataId) {
         User user = userService.getUserByAccessKey(accessKey);
         InterfaceInfo interfaceInfo = interfaceInfoService.getInterfaceInfoByDataId(dataId);
-        userInterfaceInfoService.incrementInvokeCount(user.getId(), interfaceInfo.getId(), count);
+        userInterfaceInfoService.modifyInvokeCount(user.getId(), interfaceInfo.getId());
     }
 }

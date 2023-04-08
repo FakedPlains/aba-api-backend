@@ -55,8 +55,8 @@ public class InterfaceInfoController {
      */
     @DeleteMapping()
     public ResponseResult<Boolean> deleteInterfaceInfo(@Validated @RequestBody DeleteDTO deleteDTO) {
-        boolean b = interfaceInfoService.deleteInterfaceInfo(deleteDTO.getId());
-        return ResponseUtils.success(b);
+        interfaceInfoService.deleteInterfaceInfo(deleteDTO.getId());
+        return ResponseUtils.success(true);
     }
 
     /**

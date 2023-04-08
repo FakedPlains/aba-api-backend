@@ -29,13 +29,12 @@ public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
     Page<UserInterfaceInfo> listUserInterfaceInfoByPage(UserInterfaceInfoQueryDTO userInterfaceInfoQueryDTO);
 
     /**
-     * 增加接口调用次数
+     * 修改接口调用次数
      *
      * @param userId
      * @param interfaceInfoId
-     * @param count
      */
-    void incrementInvokeCount(Long userId, Long interfaceInfoId, Integer count);
+    void modifyInvokeCount(Long userId, Long interfaceInfoId);
 
     /**
      * 获取接口剩余调用次数

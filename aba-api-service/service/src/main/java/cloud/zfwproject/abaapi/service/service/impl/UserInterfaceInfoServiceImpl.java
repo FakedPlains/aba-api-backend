@@ -121,19 +121,33 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
         return this.page(new Page<>(current, size), queryWrapper);
     }
 
+    /**
+     * 修改接口调用次数
+     *
+     * @param userId          用户 id
+     * @param interfaceInfoId 接口 id
+     */
     @Override
-    public void incrementInvokeCount(Long userId, Long interfaceInfoId, Integer count) {
+    public void modifyInvokeCount(Long userId, Long interfaceInfoId) {
         boolean res = this.lambdaUpdate()
                 .eq(UserInterfaceInfo::getUserId, userId)
                 .eq(UserInterfaceInfo::getInterfaceInfoId, interfaceInfoId)
                 .setSql("total_num = total_num + 1")
                 .setSql("left_num = left_num - 1")
+                .gt(UserInterfaceInfo::getLeftNum, 0)
                 .update();
         if (!res) {
             throw new BusinessException(ResponseCode.OPERATION_ERROR);
         }
     }
 
+    /**
+     * 获取接口剩余调用次数
+     *
+     * @param userId          用户 id
+     * @param interfaceInfoId 接口 id
+     * @return 剩余调用次数
+     */
     @Override
     public int getInvokeLeftCount(Long userId, Long interfaceInfoId) {
         UserInterfaceInfo userInterfaceInfo = this.lambdaQuery()

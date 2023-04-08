@@ -10,6 +10,6 @@ public interface DubboUserInterfaceInfoService {
 
     int getInvokeLeftCount(String accessKey, String dataId);
 
-    void incrementInvokeCount(String accessKey, String dataId, Integer count);
+    void modifyInvokeCount(String accessKey, String dataId);
 
 }
