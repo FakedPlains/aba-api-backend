@@ -52,4 +52,13 @@ public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
      * @return 总调用次数
      */
     long getInvokeCountByInterfaceId(Long interfaceInfoId);
+
+    /**
+     * 根据用户 id 和接口 id 获取用户接口信息
+     *
+     * @param userId      用户 id
+     * @param interfaceId 接口 id
+     * @return 用户接口信息
+     */
+    UserInterfaceInfo getByUserIdAndInterfaceId(Long userId, Long interfaceId);
 }

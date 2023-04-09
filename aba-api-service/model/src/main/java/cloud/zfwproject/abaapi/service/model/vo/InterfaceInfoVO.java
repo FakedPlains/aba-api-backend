@@ -19,6 +19,11 @@ import java.util.List;
 public class InterfaceInfoVO extends InterfaceInfo implements Serializable {
 
     /**
+     * 是否有用免费调用次数
+     */
+    private Integer hasFree;
+
+    /**
      * 总调用次数
      */
     private Long totalInvokeCount;

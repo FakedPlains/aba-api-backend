@@ -169,6 +169,21 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
         Long count = baseMapper.selectInvokeCountByInterfaceId(interfaceInfoId);
         return count == null ? 0 : count;
     }
+
+    /**
+     * 根据用户 id 和接口 id 获取用户接口信息
+     *
+     * @param userId      用户 id
+     * @param interfaceId 接口 id
+     * @return 用户接口信息
+     */
+    @Override
+    public UserInterfaceInfo getByUserIdAndInterfaceId(Long userId, Long interfaceId) {
+        return this.lambdaQuery()
+                .eq(UserInterfaceInfo::getUserId, userId)
+                .eq(UserInterfaceInfo::getInterfaceInfoId, interfaceId)
+                .one();
+    }
 }
 
 

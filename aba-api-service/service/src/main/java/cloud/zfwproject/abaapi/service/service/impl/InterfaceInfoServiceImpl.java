@@ -9,10 +9,7 @@ import cloud.zfwproject.abaapi.common.util.UserHolder;
 import cloud.zfwproject.abaapi.service.mapper.InterfaceInfoMapper;
 import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.*;
 import cloud.zfwproject.abaapi.service.model.enums.InterfaceInfoEnum;
-import cloud.zfwproject.abaapi.service.model.po.InterfaceCharging;
-import cloud.zfwproject.abaapi.service.model.po.InterfaceInfo;
-import cloud.zfwproject.abaapi.service.model.po.InterfaceParam;
-import cloud.zfwproject.abaapi.service.model.po.User;
+import cloud.zfwproject.abaapi.service.model.po.*;
 import cloud.zfwproject.abaapi.service.model.vo.InterfaceInfoVO;
 import cloud.zfwproject.abaapi.service.model.vo.InterfaceInvokeVO;
 import cloud.zfwproject.abaapi.service.service.*;
@@ -276,7 +273,13 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
             interfaceInfoVO.setInterfaceCharging(interfaceCharging);
         }, asyncTaskExecutor);
 
-        CompletableFuture<Void> tasks = CompletableFuture.allOf(userInfoTask, interfaceParamsTask, interfaceChargingTask);
+        CompletableFuture<Void> hasFreeTask = CompletableFuture.runAsync(() -> {
+            // 5.获取用户是否有免费调用次数
+            UserInterfaceInfo userInterfaceInfo = userInterfaceInfoService.getByUserIdAndInterfaceId(interfaceInfo.getUserId(), id);
+            interfaceInfoVO.setHasFree(userInterfaceInfo != null && userInterfaceInfo.getHasFree() == 1 ? 1 : 0);
+        }, asyncTaskExecutor);
+
+        CompletableFuture<Void> tasks = CompletableFuture.allOf(userInfoTask, interfaceParamsTask, interfaceChargingTask, hasFreeTask);
         tasks.join();
 
         return interfaceInfoVO;

@@ -40,6 +40,11 @@ public class UserInterfaceInfo implements Serializable {
     private Integer leftNum;
 
     /**
+     * 是否有免费调用次数 0-没有 1-有
+     */
+    private Integer hasFree;
+
+    /**
      * 0-正常 1-禁用
      */
     private Integer status;
