@@ -78,4 +78,35 @@ public interface InterfaceInfoEnum {
         }
     }
 
+    enum Charging {
+        FREE("免费", 0),
+        CHARGING("收费", 1);
+
+        private final String text;
+
+        private final int value;
+
+        Charging(String text, int value) {
+            this.text = text;
+            this.value = value;
+        }
+
+        /**
+         * 获取值列表
+         *
+         * @return
+         */
+        public static List<Integer> getValues() {
+            return Arrays.stream(values()).map(item -> item.value).collect(Collectors.toList());
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public String getText() {
+            return text;
+        }
+    }
+
 }

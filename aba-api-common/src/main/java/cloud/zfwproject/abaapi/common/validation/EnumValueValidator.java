@@ -20,6 +20,9 @@ public class EnumValueValidator implements ConstraintValidator<EnumValue, Intege
 
     @Override
     public boolean isValid(Integer value, ConstraintValidatorContext context) {
+        if (value == null) {
+            return false;
+        }
         for (int i : values) {
             if (value == i) {
                 return true;

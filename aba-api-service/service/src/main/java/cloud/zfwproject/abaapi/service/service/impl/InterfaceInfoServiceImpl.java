@@ -9,15 +9,13 @@ import cloud.zfwproject.abaapi.common.util.UserHolder;
 import cloud.zfwproject.abaapi.service.mapper.InterfaceInfoMapper;
 import cloud.zfwproject.abaapi.service.model.dto.interfaceinfo.*;
 import cloud.zfwproject.abaapi.service.model.enums.InterfaceInfoEnum;
+import cloud.zfwproject.abaapi.service.model.po.InterfaceCharging;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceInfo;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceParam;
 import cloud.zfwproject.abaapi.service.model.po.User;
 import cloud.zfwproject.abaapi.service.model.vo.InterfaceInfoVO;
 import cloud.zfwproject.abaapi.service.model.vo.InterfaceInvokeVO;
-import cloud.zfwproject.abaapi.service.service.InterfaceInfoService;
-import cloud.zfwproject.abaapi.service.service.InterfaceParamService;
-import cloud.zfwproject.abaapi.service.service.UserInterfaceInfoService;
-import cloud.zfwproject.abaapi.service.service.UserService;
+import cloud.zfwproject.abaapi.service.service.*;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
@@ -65,6 +63,9 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
 
     @Resource
     private UserInterfaceInfoService userInterfaceInfoService;
+
+    @Resource
+    private InterfaceChargingService interfaceChargingService;
 
     /**
      * 分页获取接口列表
@@ -298,6 +299,12 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         if (interfaceInfo == null) {
             throw new BusinessException(ResponseCode.NOT_FOUND_ERROR);
         }
+        // 2.接口计费信息是否设置
+        InterfaceCharging interfaceCharging = interfaceChargingService.getInterfaceChargingByInterfaceId(id);
+        if (interfaceCharging == null) {
+            throw new BusinessException(ResponseCode.OPERATION_ERROR, "请先设置计费信息");
+        }
+
         // 2.审核接口是否可用
 
         // 3.更新接口状态

@@ -1,5 +1,6 @@
 package cloud.zfwproject.abaapi.service.model.dto.interfacecharging;
 
+import cloud.zfwproject.abaapi.common.validation.EnumValue;
 import lombok.Data;
 
 import javax.validation.constraints.Min;
@@ -23,6 +24,7 @@ public class InterfaceChargingRequest {
     /**
      * 是否收费
      */
+    @EnumValue(values = {0, 1}, message = "只能为指定枚举值")
     private Integer isCharge;
 
     /**
