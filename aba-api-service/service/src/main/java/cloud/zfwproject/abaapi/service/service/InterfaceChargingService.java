@@ -18,7 +18,7 @@ public interface InterfaceChargingService extends IService<InterfaceCharging> {
      * @param interfaceChargingRequest 接口计费信息请求数据
      * @return id
      */
-    Long addInterfaceCharging(InterfaceChargingRequest interfaceChargingRequest);
+    Long modifyInterfaceCharging(InterfaceChargingRequest interfaceChargingRequest);
 
     /**
      * 根据接口 id 获取接口计费信息

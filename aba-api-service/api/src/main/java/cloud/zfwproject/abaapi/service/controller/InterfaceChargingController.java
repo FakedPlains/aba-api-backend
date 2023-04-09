@@ -36,14 +36,14 @@ public class InterfaceChargingController {
     }
 
     /**
-     * 添加接口计费信息
+     * 修改接口计费信息
      *
      * @param interfaceChargingRequest 接口计费信息请求数据
      * @return id
      */
     @PostMapping
-    public ResponseResult<Long> addInterfaceCharging(@RequestBody @Validated InterfaceChargingRequest interfaceChargingRequest) {
-        Long id = interfaceChargingService.addInterfaceCharging(interfaceChargingRequest);
+    public ResponseResult<Long> modifyInterfaceCharging(@RequestBody @Validated InterfaceChargingRequest interfaceChargingRequest) {
+        Long id = interfaceChargingService.modifyInterfaceCharging(interfaceChargingRequest);
         return ResponseUtils.success(id);
     }
 

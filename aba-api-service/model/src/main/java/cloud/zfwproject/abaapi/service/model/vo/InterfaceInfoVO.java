@@ -1,5 +1,6 @@
 package cloud.zfwproject.abaapi.service.model.vo;
 
+import cloud.zfwproject.abaapi.service.model.po.InterfaceCharging;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceInfo;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceParam;
 import lombok.Data;
@@ -46,6 +47,11 @@ public class InterfaceInfoVO extends InterfaceInfo implements Serializable {
      * 错误码
      */
     private List<InterfaceParam> errorCode;
+
+    /**
+     * 接口计费信息
+     */
+    private InterfaceCharging interfaceCharging;
 
     private static final long serialVersionUID = 1L;
 }

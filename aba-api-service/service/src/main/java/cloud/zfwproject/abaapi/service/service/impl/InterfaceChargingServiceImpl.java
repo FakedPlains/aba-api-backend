@@ -28,7 +28,7 @@ public class InterfaceChargingServiceImpl extends ServiceImpl<InterfaceChargingM
      * @return id
      */
     @Override
-    public Long addInterfaceCharging(InterfaceChargingRequest interfaceChargingRequest) {
+    public Long modifyInterfaceCharging(InterfaceChargingRequest interfaceChargingRequest) {
         // 1.判断是否收费
         if (interfaceChargingRequest.getIsCharge().equals(InterfaceInfoEnum.Charging.CHARGING.getValue())) {
             // 2.判断价格是否合法
@@ -38,12 +38,24 @@ public class InterfaceChargingServiceImpl extends ServiceImpl<InterfaceChargingM
             }
         }
 
-        // 3.保存数据
         InterfaceCharging interfaceCharging = new InterfaceCharging();
         BeanUtil.copyProperties(interfaceChargingRequest, interfaceCharging);
-        boolean save = this.save(interfaceCharging);
-        if (!save) {
-            throw new BusinessException(ResponseCode.OPERATION_ERROR, "添加失败");
+        // 3.保存数据
+        Long interfaceId = interfaceCharging.getInterfaceInfoId();
+        Long count = this.lambdaQuery()
+                .eq(InterfaceCharging::getInterfaceInfoId, interfaceId)
+                .count();
+        boolean res;
+        if (count <= 0) {
+            res = this.save(interfaceCharging);
+        } else {
+            res = this.lambdaUpdate()
+                    .eq(InterfaceCharging::getInterfaceInfoId, interfaceChargingRequest.getInterfaceInfoId())
+                    .update(interfaceCharging);
+        }
+
+        if (!res) {
+            throw new BusinessException(ResponseCode.OPERATION_ERROR, "配置失败");
         }
 
         return interfaceCharging.getId();

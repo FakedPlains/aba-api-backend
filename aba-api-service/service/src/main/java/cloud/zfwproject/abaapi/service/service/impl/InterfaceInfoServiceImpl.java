@@ -36,6 +36,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
@@ -247,22 +248,36 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         InterfaceInfoVO interfaceInfoVO = new InterfaceInfoVO();
         BeanUtil.copyProperties(interfaceInfo, interfaceInfoVO);
 
-        User user = userService.getById(interfaceInfoVO.getUserId());
-        interfaceInfoVO.setUserAccount(user.getUserAccount());
+        CompletableFuture<Void> userInfoTask = CompletableFuture.runAsync(() -> {
+            // 2.获取用户信息
+            User user = userService.getById(interfaceInfoVO.getUserId());
+            interfaceInfoVO.setUserAccount(user.getUserAccount());
+        }, asyncTaskExecutor);
 
-        // 2.获取接口参数信息
-        List<InterfaceParam> interfaceParams = interfaceParamService.getInterfaceParamsByInterfaceId(id);
-        Map<Integer, List<InterfaceParam>> paramsMap = interfaceParams.stream()
-                .collect(Collectors.groupingBy(InterfaceParam::getStyle));
+        CompletableFuture<Void> interfaceParamsTask = CompletableFuture.runAsync(() -> {
+            // 3.获取接口参数信息
+            List<InterfaceParam> interfaceParams = interfaceParamService.getInterfaceParamsByInterfaceId(id);
+            Map<Integer, List<InterfaceParam>> paramsMap = interfaceParams.stream()
+                    .collect(Collectors.groupingBy(InterfaceParam::getStyle));
 
-        List<InterfaceParam> requestParams = CollUtil.unionAll(paramsMap.get(InterfaceInfoEnum.Style.PATH.getValue()), paramsMap.get(InterfaceInfoEnum.Style.QUERY.getValue()), paramsMap.get(InterfaceInfoEnum.Style.BODY.getValue()));
-        interfaceInfoVO.setRequestParams(requestParams);
-        List<InterfaceParam> requestHeaders = paramsMap.get(InterfaceInfoEnum.Style.HEADER.getValue());
-        interfaceInfoVO.setRequestHeaders(requestHeaders);
-        List<InterfaceParam> responseParams = paramsMap.get(InterfaceInfoEnum.Style.RETURN.getValue());
-        interfaceInfoVO.setResponseParams(responseParams);
-        List<InterfaceParam> errorCode = paramsMap.get(InterfaceInfoEnum.Style.ERROR.getValue());
-        interfaceInfoVO.setErrorCode(errorCode);
+            List<InterfaceParam> requestParams = CollUtil.unionAll(paramsMap.get(InterfaceInfoEnum.Style.PATH.getValue()), paramsMap.get(InterfaceInfoEnum.Style.QUERY.getValue()), paramsMap.get(InterfaceInfoEnum.Style.BODY.getValue()));
+            interfaceInfoVO.setRequestParams(requestParams);
+            List<InterfaceParam> requestHeaders = paramsMap.get(InterfaceInfoEnum.Style.HEADER.getValue());
+            interfaceInfoVO.setRequestHeaders(requestHeaders);
+            List<InterfaceParam> responseParams = paramsMap.get(InterfaceInfoEnum.Style.RETURN.getValue());
+            interfaceInfoVO.setResponseParams(responseParams);
+            List<InterfaceParam> errorCode = paramsMap.get(InterfaceInfoEnum.Style.ERROR.getValue());
+            interfaceInfoVO.setErrorCode(errorCode);
+        }, asyncTaskExecutor);
+
+        CompletableFuture<Void> interfaceChargingTask = CompletableFuture.runAsync(() -> {
+            // 4.获取接口计费信息
+            InterfaceCharging interfaceCharging = interfaceChargingService.getInterfaceChargingByInterfaceId(id);
+            interfaceInfoVO.setInterfaceCharging(interfaceCharging);
+        }, asyncTaskExecutor);
+
+        CompletableFuture<Void> tasks = CompletableFuture.allOf(userInfoTask, interfaceParamsTask, interfaceChargingTask);
+        tasks.join();
 
         return interfaceInfoVO;
     }
