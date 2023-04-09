@@ -2,6 +2,7 @@ package cloud.zfwproject.abaapi.service.service.impl;
 
 
 import cloud.zfwproject.abaapi.service.mapper.InterfaceChargingMapper;
+import cloud.zfwproject.abaapi.service.model.dto.interfacecharging.InterfaceChargingRequest;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceCharging;
 import cloud.zfwproject.abaapi.service.service.InterfaceChargingService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -15,6 +16,18 @@ import org.springframework.stereotype.Service;
 @Service("interfaceChargingService")
 public class InterfaceChargingServiceImpl extends ServiceImpl<InterfaceChargingMapper, InterfaceCharging>
     implements InterfaceChargingService {
+
+    /**
+     * 添加接口计费信息
+     *
+     * @param interfaceChargingRequest 接口计费信息请求数据
+     * @return id
+     */
+    @Override
+    public Long addInterfaceCharging(InterfaceChargingRequest interfaceChargingRequest) {
+
+        return null;
+    }
 
 }
 

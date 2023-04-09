@@ -1,6 +1,7 @@
 package cloud.zfwproject.abaapi.service.service;
 
 
+import cloud.zfwproject.abaapi.service.model.dto.interfacecharging.InterfaceChargingRequest;
 import cloud.zfwproject.abaapi.service.model.po.InterfaceCharging;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -11,4 +12,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface InterfaceChargingService extends IService<InterfaceCharging> {
 
+    /**
+     * 添加接口计费信息
+     *
+     * @param interfaceChargingRequest 接口计费信息请求数据
+     * @return id
+     */
+    Long addInterfaceCharging(InterfaceChargingRequest interfaceChargingRequest);
 }
