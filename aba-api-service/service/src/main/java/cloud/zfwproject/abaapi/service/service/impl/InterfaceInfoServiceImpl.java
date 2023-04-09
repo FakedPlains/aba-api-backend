@@ -37,7 +37,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -51,7 +51,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         implements InterfaceInfoService {
 
     @Resource
-    private ExecutorService asyncTaskExecutor;
+    private Executor asyncTaskExecutor;
 
     @Resource
     private RedisService redisService;
@@ -193,7 +193,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
             throw new BusinessException(ResponseCode.OPERATION_ERROR, "删除失败");
         }
         // TODO 异步删除接口相关信息
-        asyncTaskExecutor.submit(() ->
+        asyncTaskExecutor.execute(() ->
                 interfaceParamService.deleteInterfaceParamsByInterfaceId(id)
         );
 
