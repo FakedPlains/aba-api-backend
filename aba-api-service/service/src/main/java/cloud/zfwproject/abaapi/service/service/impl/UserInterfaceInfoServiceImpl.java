@@ -160,6 +160,15 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
         }
         return userInterfaceInfo.getLeftNum();
     }
+
+    @Override
+    public long getInvokeCountByInterfaceId(Long interfaceInfoId) {
+        if (interfaceInfoId == null || interfaceInfoId <= 0) {
+            throw new BusinessException(ResponseCode.INVALID_PARAMS, "接口不存在");
+        }
+        Long count = baseMapper.selectInvokeCountByInterfaceId(interfaceInfoId);
+        return count == null ? 0 : count;
+    }
 }
 
 

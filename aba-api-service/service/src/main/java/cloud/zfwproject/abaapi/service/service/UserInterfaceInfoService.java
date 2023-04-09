@@ -44,4 +44,12 @@ public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
      * @return
      */
     int getInvokeLeftCount(Long userId, Long interfaceInfoId);
+
+    /**
+     * 根据接口 id 获取总调用次数
+     *
+     * @param interfaceInfoId 接口 id
+     * @return 总调用次数
+     */
+    long getInvokeCountByInterfaceId(Long interfaceInfoId);
 }

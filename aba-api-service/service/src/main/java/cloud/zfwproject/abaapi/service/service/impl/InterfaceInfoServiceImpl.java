@@ -16,6 +16,7 @@ import cloud.zfwproject.abaapi.service.model.vo.InterfaceInfoVO;
 import cloud.zfwproject.abaapi.service.model.vo.InterfaceInvokeVO;
 import cloud.zfwproject.abaapi.service.service.InterfaceInfoService;
 import cloud.zfwproject.abaapi.service.service.InterfaceParamService;
+import cloud.zfwproject.abaapi.service.service.UserInterfaceInfoService;
 import cloud.zfwproject.abaapi.service.service.UserService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
@@ -62,6 +63,9 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
     @Resource
     private InterfaceParamService interfaceParamService;
 
+    @Resource
+    private UserInterfaceInfoService userInterfaceInfoService;
+
     /**
      * 分页获取接口列表
      *
@@ -93,11 +97,17 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
                 .map(interfaceInfo -> {
                     InterfaceInfoVO interfaceInfoVO = new InterfaceInfoVO();
                     BeanUtil.copyProperties(interfaceInfo, interfaceInfoVO);
+                    // 获取创建人
                     User user = userService.getById(interfaceInfoVO.getUserId());
                     interfaceInfoVO.setUserAccount(user.getUserAccount());
+                    // 获取总调用次数
+                    long count = userInterfaceInfoService.getInvokeCountByInterfaceId(interfaceInfo.getId());
+                    interfaceInfoVO.setTotalInvokeCount(count);
+
                     return interfaceInfoVO;
                 })
                 .collect(Collectors.toList());
+
         Page<InterfaceInfoVO> interfaceInfoVOPage = new PageDTO<>(interfaceInfoPage.getCurrent(), interfaceInfoPage.getSize(), interfaceInfoPage.getTotal());
         interfaceInfoVOPage.setRecords(interfaceInfoVOS);
         return interfaceInfoVOPage;

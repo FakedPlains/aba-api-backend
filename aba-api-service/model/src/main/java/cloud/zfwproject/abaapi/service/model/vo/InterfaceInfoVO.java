@@ -18,6 +18,11 @@ import java.util.List;
 public class InterfaceInfoVO extends InterfaceInfo implements Serializable {
 
     /**
+     * 总调用次数
+     */
+    private Long totalInvokeCount;
+
+    /**
      * 创建人
      */
     private String userAccount;

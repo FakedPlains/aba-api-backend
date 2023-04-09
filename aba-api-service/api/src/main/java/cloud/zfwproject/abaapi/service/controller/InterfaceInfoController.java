@@ -100,7 +100,7 @@ public class InterfaceInfoController {
     /**
      * 分页获取接口列表
      *
-     * @param interfaceInfoQueryDTO 接口查询书籍
+     * @param interfaceInfoQueryDTO 接口查询数据
      * @return 接口分页列表
      */
     @GetMapping("/show")
@@ -112,7 +112,7 @@ public class InterfaceInfoController {
     /**
      * 分页获取展示接口列表
      *
-     * @param interfaceInfoQueryDTO 接口查询书籍
+     * @param interfaceInfoQueryDTO 接口查询数据
      * @return 接口分页列表
      */
     @GetMapping("/page")

@@ -47,7 +47,6 @@ public class AsyncConfig implements AsyncConfigurer {
         threadPoolTaskExecutor.setKeepAliveSeconds(keepAliveTime);
         // 线程池对拒绝任务(无线程可用)的处理策略
         threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-
         threadPoolTaskExecutor.initialize();
         return threadPoolTaskExecutor;
     }
