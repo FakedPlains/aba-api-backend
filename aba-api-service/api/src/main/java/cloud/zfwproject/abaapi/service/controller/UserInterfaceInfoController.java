@@ -2,7 +2,9 @@ package cloud.zfwproject.abaapi.service.controller;
 
 
 import cloud.zfwproject.abaapi.common.model.ResponseResult;
+import cloud.zfwproject.abaapi.common.model.SimpleUser;
 import cloud.zfwproject.abaapi.common.util.ResponseUtils;
+import cloud.zfwproject.abaapi.common.util.UserHolder;
 import cloud.zfwproject.abaapi.service.model.dto.DeleteDTO;
 import cloud.zfwproject.abaapi.service.model.dto.userinterfaceinfo.UserInterfaceInfoAddDTO;
 import cloud.zfwproject.abaapi.service.model.dto.userinterfaceinfo.UserInterfaceInfoQueryDTO;
@@ -24,7 +26,7 @@ import java.util.List;
  * @author yupi
  */
 @RestController
-@RequestMapping("/user-interface-info")
+@RequestMapping("/user/interface/info")
 @Slf4j
 public class UserInterfaceInfoController {
 
@@ -112,6 +114,33 @@ public class UserInterfaceInfoController {
     public ResponseResult<Page<UserInterfaceInfo>> listUserInterfaceInfoByPage(@Validated UserInterfaceInfoQueryDTO userInterfaceInfoQueryDTO) {
         Page<UserInterfaceInfo> userInterfaceInfoPage = userInterfaceInfoService.listUserInterfaceInfoByPage(userInterfaceInfoQueryDTO);
         return ResponseUtils.success(userInterfaceInfoPage);
+    }
+
+    /**
+     * 激活接口
+     *
+     * @param interfaceInfoId 接口 id
+     * @return
+     */
+    @PostMapping("{interfaceInfoId}/active")
+    public ResponseResult<Void> activeFreeInvoke(@PathVariable("interfaceInfoId") Long interfaceInfoId) {
+        SimpleUser user = UserHolder.getUser();
+        userInterfaceInfoService.activeFreeInvoke(user.getId(), interfaceInfoId);
+        return ResponseUtils.success();
+    }
+
+    /**
+     * 购买接口调用次数
+     *
+     * @param count           调用次数
+     * @param interfaceInfoId 接口 id
+     * @return
+     */
+    @PostMapping("{interfaceInfoId}/buy/{count}")
+    public ResponseResult<Void> buyInterfaceInvokeCount(@PathVariable("count") Long count, @PathVariable("interfaceInfoId") Long interfaceInfoId) {
+        SimpleUser user = UserHolder.getUser();
+        userInterfaceInfoService.buyInterfaceInvokeCount(user.getId(), interfaceInfoId, count);
+        return ResponseUtils.success();
     }
 
     // endregion

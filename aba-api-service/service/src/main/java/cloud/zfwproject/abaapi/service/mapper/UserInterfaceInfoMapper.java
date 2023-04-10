@@ -20,6 +20,16 @@ public interface UserInterfaceInfoMapper extends BaseMapper<UserInterfaceInfo> {
      * @return 总调用次数
      */
     Long selectInvokeCountByInterfaceId(@Param("interfaceId") Long interfaceInfoId);
+
+    /**
+     * 增加接口调用次数
+     *
+     * @param userId      用户 id
+     * @param interfaceId 接口 id
+     * @param count       调用次数
+     * @return 返回数据库受影响行数
+     */
+    Long increaseInvokeCount(@Param("userId") Long userId, @Param("interfaceId") Long interfaceId, @Param("count") Long count);
 }
 
 

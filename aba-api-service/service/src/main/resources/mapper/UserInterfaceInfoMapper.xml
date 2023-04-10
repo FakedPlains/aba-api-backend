@@ -23,6 +23,14 @@
         create_time,update_time,is_delete
     </sql>
 
+    <!-- 增加接口调用次数 -->
+    <update id="increaseInvokeCount">
+        update user_interface_info
+        set left_num = left_num + #{count}
+        where user_id = #{userId}
+          and interface_info_id = #{interfaceId}
+    </update>
+
     <!-- 根据接口 id 查询总调用次数 -->
     <select id="selectInvokeCountByInterfaceId" resultType="java.lang.Long">
         select sum(`total_num`)

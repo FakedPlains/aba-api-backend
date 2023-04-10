@@ -61,4 +61,22 @@ public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
      * @return 用户接口信息
      */
     UserInterfaceInfo getByUserIdAndInterfaceId(Long userId, Long interfaceId);
+
+    /**
+     * 激活接口
+     *
+     * @param userId          用户 id
+     * @param interfaceInfoId 接口 id
+     */
+    void activeFreeInvoke(Long userId, Long interfaceInfoId);
+
+    /**
+     * 购买接口调用次数
+     *
+     * @param userId          用户 id
+     * @param count           调用次数
+     * @param interfaceInfoId 接口 id
+     * @return
+     */
+    void buyInterfaceInvokeCount(Long userId, Long interfaceInfoId, Long count);
 }

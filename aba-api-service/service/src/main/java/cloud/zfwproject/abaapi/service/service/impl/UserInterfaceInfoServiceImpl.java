@@ -7,16 +7,22 @@ import cloud.zfwproject.abaapi.service.mapper.UserInterfaceInfoMapper;
 import cloud.zfwproject.abaapi.service.model.dto.userinterfaceinfo.UserInterfaceInfoAddDTO;
 import cloud.zfwproject.abaapi.service.model.dto.userinterfaceinfo.UserInterfaceInfoQueryDTO;
 import cloud.zfwproject.abaapi.service.model.dto.userinterfaceinfo.UserInterfaceInfoUpdateDTO;
+import cloud.zfwproject.abaapi.service.model.po.InterfaceCharging;
+import cloud.zfwproject.abaapi.service.model.po.InterfaceInfo;
 import cloud.zfwproject.abaapi.service.model.po.UserInterfaceInfo;
+import cloud.zfwproject.abaapi.service.service.InterfaceChargingService;
+import cloud.zfwproject.abaapi.service.service.InterfaceInfoService;
 import cloud.zfwproject.abaapi.service.service.UserInterfaceInfoService;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -28,6 +34,13 @@ import java.util.List;
 @Service("userInterfaceInfoService")
 public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoMapper, UserInterfaceInfo>
         implements UserInterfaceInfoService {
+
+    @Lazy
+    @Resource
+    private InterfaceInfoService interfaceInfoService;
+
+    @Resource
+    private InterfaceChargingService interfaceChargingService;
 
     @Override
     public long addUserInterfaceInfo(@Validated UserInterfaceInfoAddDTO userInterfaceInfoAddDTO) {
@@ -183,6 +196,63 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
                 .eq(UserInterfaceInfo::getUserId, userId)
                 .eq(UserInterfaceInfo::getInterfaceInfoId, interfaceId)
                 .one();
+    }
+
+    /**
+     * 激活接口
+     *
+     * @param userId          用户 id
+     * @param interfaceInfoId 接口 id
+     */
+    @Override
+    public void activeFreeInvoke(Long userId, Long interfaceInfoId) {
+        // 1.查询接口信息
+        InterfaceInfo interfaceInfo = interfaceInfoService.getById(interfaceInfoId);
+        if (interfaceInfo == null) {
+            throw new BusinessException(ResponseCode.OPERATION_ERROR, "接口不存在");
+        }
+        // 2.查询接口计费信息
+        InterfaceCharging interfaceCharging = interfaceChargingService.getInterfaceChargingByInterfaceId(interfaceInfoId);
+        if (interfaceCharging == null) {
+            throw new BusinessException(ResponseCode.OPERATION_ERROR, "接口计费信息不存在");
+        }
+        // 3.保存用户接口关系
+        UserInterfaceInfo userInterfaceInfo = new UserInterfaceInfo();
+        userInterfaceInfo.setUserId(userId);
+        userInterfaceInfo.setInterfaceInfoId(interfaceInfoId);
+        userInterfaceInfo.setLeftNum(interfaceCharging.getFreeCount());
+        boolean save = this.save(userInterfaceInfo);
+        if (!save) {
+            throw new BusinessException(ResponseCode.OPERATION_ERROR, "操作失败");
+        }
+    }
+
+    /**
+     * 购买接口调用次数
+     *
+     * @param userId          用户 id
+     * @param count           调用次数
+     * @param interfaceInfoId 接口 id
+     * @return
+     */
+    @Override
+    public void buyInterfaceInvokeCount(Long userId, Long interfaceInfoId, Long count) {
+        // 1.查询记录是否存在
+        Long data = this.lambdaQuery()
+                .eq(UserInterfaceInfo::getUserId, userId)
+                .eq(UserInterfaceInfo::getInterfaceInfoId, interfaceInfoId)
+                .count();
+
+        // 2.不存在，激活免费调用次数
+        if (data <= 0) {
+            this.activeFreeInvoke(userId, interfaceInfoId);
+        }
+
+        // 3.更新调用次数
+        Long update = baseMapper.increaseInvokeCount(userId, interfaceInfoId, count);
+        if (update == null || update <= 0) {
+            throw new BusinessException(ResponseCode.OPERATION_ERROR, "操作失败");
+        }
     }
 }
 
