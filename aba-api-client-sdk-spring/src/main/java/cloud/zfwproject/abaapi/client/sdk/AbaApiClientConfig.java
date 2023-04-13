@@ -1,11 +1,12 @@
 package cloud.zfwproject.abaapi.client.sdk;
 
 import cloud.zfwproject.abaapi.client.sdk.client.AbaApiClient;
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.Resource;
 
 /**
  * @author 46029
@@ -13,17 +14,16 @@ import org.springframework.context.annotation.Configuration;
  * @description TODO
  * @date 2023/3/16 21:09
  */
-@Data
 @Configuration
 @ComponentScan
-@ConfigurationProperties("abaapi.client")
+@EnableConfigurationProperties(AbaApiClientProperties.class)
 public class AbaApiClientConfig {
 
-    private String accessKey;
-    private String secretKey;
+    @Resource
+    private AbaApiClientProperties abaApiClientProperties;
 
     @Bean
     public AbaApiClient abaApiClient() {
-        return new AbaApiClient(accessKey, secretKey);
+        return new AbaApiClient(abaApiClientProperties.getAccessKey(), abaApiClientProperties.getSecretKey());
     }
 }
