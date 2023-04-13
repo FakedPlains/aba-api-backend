@@ -5,6 +5,7 @@ import cloud.zfwproject.abaapi.common.model.ResponseCode;
 import cloud.zfwproject.abaapi.common.model.SimpleUser;
 import cloud.zfwproject.abaapi.common.service.RedisService;
 import cloud.zfwproject.abaapi.common.util.UserHolder;
+import cloud.zfwproject.abaapi.service.encoder.PasswordEncoder;
 import cloud.zfwproject.abaapi.service.mapper.UserMapper;
 import cloud.zfwproject.abaapi.service.model.dto.DeleteDTO;
 import cloud.zfwproject.abaapi.service.model.dto.user.*;
@@ -47,6 +48,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Resource
     private RedisService redisService;
 
+    @Resource
+    private PasswordEncoder passwordEncoder;
+
     /**
      * 用户登录
      *
@@ -67,7 +71,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException("用户不存在");
         // 3.判断密码是否正确
         String password = userLoginDTO.getUserPassword();
-        String md5 = SecureUtil.md5(password);
+        String md5 = passwordEncoder.encode(password);
         if (!md5.equals(user.getUserPassword()))
             throw new BusinessException("密码错误");
         // 4.随机生成 token 作为登录令牌
@@ -103,7 +107,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                 throw new BusinessException(ResponseCode.INVALID_PARAMS, "账号重复");
             }
             // 3.密码加密、生成用户名、全局唯一 Id 生成
-            String md5 = SecureUtil.md5(userPassword);
+            String md5 = passwordEncoder.encode(userPassword);
             long id = IdUtil.getSnowflakeNextId();
             // 4. 生成 accessKey、secretKey
             String accessKey = DigestUtil.md5Hex(userAccount + RandomUtil.randomNumbers(5));
