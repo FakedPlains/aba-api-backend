@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     @DubboReference
     private DubboUserService userService;
 
-    private static final List<String> IP_WHITE_LIST = List.of("127.0.0.1", "0:0:0:0:0:0:0:1");
+    private static final List<String> IP_WHITE_LIST = Arrays.asList("127.0.0.1", "0:0:0:0:0:0:0:1");
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

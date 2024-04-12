@@ -14,7 +14,7 @@
     <name>aba-api-test-client</name>
     <description>aba-api-test-client</description>
     <properties>
-        <java.version>11</java.version>
+        <java.version>1.8</java.version>
     </properties>
     <dependencies>
         <dependency>

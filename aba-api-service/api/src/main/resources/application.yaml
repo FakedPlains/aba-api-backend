@@ -4,16 +4,20 @@ server:
     context-path: /api
 
 spring:
-
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.10.11:3306/aba_api?useSSL=false&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+    url: jdbc:mysql://117.72.40.28:3306/aba_api?useSSL=false&characterEncoding=UTF-8&serverTimezone=GMT%2B8
     username: root
-    password: root
+    password: dIk&954.#326
   redis:
-    host: 192.168.10.11
+    host: 117.72.40.28
     port: 6379
-    password: root
+    password: dIk&954.#326
+  kafka:
+    bootstrap-servers: 117.72.40.28:9092
+    consumer:
+      group-id: interface-audit-group
+
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
@@ -35,7 +39,8 @@ dubbo:
     name: dubbo
     port: -1
   registry:
-    address: nacos://192.168.10.11:8848
+    address: nacos://localhost:8848
+#    address: nacos://117.72.40.28:8848
     parameters:
       namespace: 4ae9a459-9e4a-4371-bd04-60c8fc08aeb1
       group: aba-api

@@ -4,6 +4,7 @@ package cloud.zfwproject.abaapi.common.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public enum ResponseCode {
     HTTP_STATUS_500("500", "server error");
 
 
-    public static final List<ResponseCode> HTTP_STATUS_ALL = List.of(HTTP_STATUS_200, HTTP_STATUS_400, HTTP_STATUS_401, HTTP_STATUS_403, HTTP_STATUS_500);
+    public static final List<ResponseCode> HTTP_STATUS_ALL = Arrays.asList(HTTP_STATUS_200, HTTP_STATUS_400, HTTP_STATUS_401, HTTP_STATUS_403, HTTP_STATUS_500);
 
 
     /**

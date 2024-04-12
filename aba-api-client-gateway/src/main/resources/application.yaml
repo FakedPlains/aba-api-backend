@@ -3,9 +3,9 @@ server:
 
 spring:
   redis:
-    host: 192.168.10.11
+    host: 117.72.40.28
     port: 6379
-    password: root
+    password: dIk&954.#326
   cloud:
     gateway:
       routes:
@@ -21,7 +21,7 @@ dubbo:
     name: dubbo
     port: -1
   registry:
-    address: nacos://192.168.10.11:8848
+    address: nacos://117.72.40.28:8848
     parameters:
       namespace: 4ae9a459-9e4a-4371-bd04-60c8fc08aeb1
       group: aba-api

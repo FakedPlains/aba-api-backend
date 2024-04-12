@@ -26,6 +26,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -66,6 +67,9 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
 
     @Resource
     private InterfaceChargingService interfaceChargingService;
+
+    @Resource
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     /**
      * 分页获取接口列表
@@ -313,7 +317,6 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
      */
     @Override
     public boolean onlineInterfaceInfo(Long id) {
-        // TODO 修改逻辑 -> 需要进行审核
         // 1.判断是否存在
         InterfaceInfo interfaceInfo = this.getById(id);
         if (interfaceInfo == null) {
@@ -326,6 +329,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         }
 
         // 2.审核接口是否可用
+        kafkaTemplate.send("", "");
 
         // 3.更新接口状态
         boolean res = updateInterfaceInfoStatus(id, InterfaceInfoEnum.Status.ONLINE.getValue());

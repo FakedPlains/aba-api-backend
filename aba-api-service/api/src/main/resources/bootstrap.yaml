@@ -5,7 +5,8 @@ spring:
     active: dev
   cloud:
     nacos:
-      server-addr: 192.168.10.11:8848
+      server-addr: localhost:8848
+#      server-addr: 117.72.40.28:8848
       discovery:
         namespace: 4ae9a459-9e4a-4371-bd04-60c8fc08aeb1
         group: aba-api

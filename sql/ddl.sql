@@ -29,6 +29,7 @@ drop table if exists `interface_info`;
 create table `interface_info`
 (
     `id`           bigint unsigned auto_increment comment 'id' primary key,
+    `data_id`      varchar(32)  not null comment 'md5',
     `name`         varchar(256) not null comment '接口名称',
     `description`  varchar(256) null comment '描述',
     `url`          varchar(512) not null comment '接口地址',
@@ -68,6 +69,7 @@ create table `user_interface_info`
     `interface_info_id` bigint                             not null comment '接口信息',
     `total_num`         int      default 0 comment '调用次数',
     `left_num`          int      default 0 comment '剩余调用次数',
+    `has_free`          tinyint  default 1 comment '0-没有 1-有',
     `status`            tinyint  default 0 comment '0-正常 1-禁用',
     `create_time`       datetime default CURRENT_TIMESTAMP not null comment '创建时间',
     `update_time`       datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
